@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>機械花藝拼裝台 — Mechanical Floral Puzzle</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🌸</text></svg>">
+<link rel="stylesheet" href="./fonts/fonts.css">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-card">
+      <p class="loading-title">機械花藝拼裝台</p>
+      <p class="loading-sub">Mechanical Floral Puzzle</p>
+      <div class="loading-bar"><div id="loadingFill"></div></div>
+      <p id="loadingMsg">準備零件…</p>
+    </div>
+  </div>
+
+  <canvas id="stage" aria-label="3D 拼裝舞台"></canvas>
+  <div id="vignette" aria-hidden="true"></div>
+
+  <header id="topbar">
+    <div class="brand">
+      <h1>機械花藝拼裝台</h1>
+      <span class="brand-en">Mechanical Floral Puzzle</span>
+    </div>
+    <nav class="top-actions">
+      <button id="btnRings" class="ghost-btn" aria-pressed="false" title="切換插槽光圈顯示">隱藏光圈</button>
+      <button id="btnBloomPlay" class="ghost-btn" aria-pressed="false" title="所有花朵同步開→合展示">全部播放</button>
+      <button id="btnRotate" class="ghost-btn" aria-pressed="false" title="自動旋轉展示">旋轉展示</button>
+      <button id="btnShot" class="ghost-btn" title="下載目前畫面">截圖</button>
+      <button id="btnShare" class="ghost-btn" title="複製分享連結,並自動儲存">分享</button>
+      <button id="btnRule" class="ghost-btn" title="連接規則說明">接法說明</button>
+    </nav>
+  </header>
+
+  <aside id="panel" aria-label="拼裝控制面板">
+    <section class="sec" id="secPot">
+      <h2>選擇花盆</h2>
+      <div id="potRow" class="chip-row"></div>
+    </section>
+
+    <section class="sec" id="secSlots">
+      <h2>插槽</h2>
+      <p class="hint" id="slotHint">按鈕的位置就是花盆插槽的實際位置,點選即開始組裝。</p>
+      <div id="slotRow"></div>
+      <p class="hint" id="collideStatus" hidden></p>
+    </section>
+
+    <section class="sec" id="secBloom">
+      <h2>開花時間軸(所有花朵)</h2>
+      <div class="bloom-row">
+        <span class="bloom-cap">閉起</span>
+        <input id="bloomTimeline" type="range" min="0" max="100" step="1" value="100" aria-label="開花程度時間軸">
+        <span class="bloom-cap">全開</span>
+      </div>
+      <div class="bloom-row">
+        <output id="bloomOut">100%</output>
+        <span class="bloom-hint">拖動即停止播放,並停在此開花程度。單朵花可在下方組裝列內獨立播放。</span>
+      </div>
+    </section>
+
+    <section class="sec" id="secBuilder" hidden>
+      <h2 id="builderTitle">組裝</h2>
+      <div id="chainTree"></div>
+      <div id="nextPicker"></div>
+    </section>
+  </aside>
+
+  <footer id="specimen" hidden>
+    <p id="specimenText"></p>
+  </footer>
+
+  <div id="ruleModal" hidden>
+    <div class="rule-card" role="dialog" aria-modal="true" aria-labelledby="ruleTitle">
+      <h2 id="ruleTitle">零件接法</h2>
+      <ul class="rule-list">
+        <li><b>花盆</b>上每個插槽可插入一株莖的底部。</li>
+        <li><b>A 類莖</b>:頭部(頂端)只能接<b>花朵 / 蓮葉</b>,就是終點。</li>
+        <li><b>B 類莖</b>:頭部只能接<b>連接器</b>;連接器頂端可再接下一株莖,可以一直延伸。</li>
+        <li>帶葉連接器(鬱金香葉、菊花葉、玫瑰葉)也算連接器,會在接縫處長出葉子。</li>
+        <li>每個零件都可以<b>自轉</b>:讓莖的彎曲方向、葉子朝向隨你安排。</li>
+      </ul>
+      <button id="btnRuleClose" class="solid-btn">了解</button>
+    </div>
+  </div>
+
+  <div id="toast" hidden></div>
+
+    <script src="./app.bundle.js"></script>
+</body>
+</html>

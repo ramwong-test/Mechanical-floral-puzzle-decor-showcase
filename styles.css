@@ -62,19 +62,30 @@ body {
 .brand-en {
   font-size: 10.5px; letter-spacing: .22em; color: rgba(243, 239, 230, .48);
 }
-.top-actions { pointer-events: auto; display: flex; gap: 8px; }
+/* 按鈕群置中:以頂欄為基準絕對定位,不受左側標題寬度影響 */
+.top-actions {
+  pointer-events: auto; display: flex; gap: 8px;
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+}
 
 .ghost-btn {
   background: rgba(35, 38, 31, .55); color: var(--porcelain);
   border: 1px solid rgba(243, 239, 230, .22);
   border-radius: var(--radius);
   font: inherit; font-size: 12.5px;
-  padding: 7px 13px; cursor: pointer;
+  padding: 8px; cursor: pointer;
   backdrop-filter: blur(6px);
   transition: border-color .15s ease, background .15s ease;
+  display: inline-flex; align-items: center; justify-content: center;
 }
 .ghost-btn:hover { border-color: rgba(243, 239, 230, .5); }
 .ghost-btn[aria-pressed="true"] { background: var(--moss); border-color: var(--moss); }
+/* icon 化按鈕 */
+.ghost-btn .ic { display: block; width: 18px; height: 18px; }
+/* 切換式按鈕:依 aria-pressed 在兩顆 icon 間切換 */
+#btnRings .ic-alt, #btnBloomPlay .ic-alt { display: none; }
+#btnRings[aria-pressed="true"] .ic-main, #btnBloomPlay[aria-pressed="true"] .ic-main { display: none; }
+#btnRings[aria-pressed="true"] .ic-alt, #btnBloomPlay[aria-pressed="true"] .ic-alt { display: block; }
 :is(button, [tabindex]):focus-visible { outline: 2px solid var(--brass-bright); outline-offset: 2px; }
 
 /* ---------- left panel ---------- */

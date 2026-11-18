@@ -1,5 +1,5 @@
 (() => {
-  // node_modules/three/build/three.module.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three/build/three.module.js
   var REVISION = "170";
   var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2 };
   var TOUCH = { ROTATE: 0, PAN: 1, DOLLY_PAN: 2, DOLLY_ROTATE: 3 };
@@ -23562,7 +23562,7 @@ void main() {
     }
   }
 
-  // node_modules/three/examples/jsm/controls/OrbitControls.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three/examples/jsm/controls/OrbitControls.js
   var _changeEvent = { type: "change" };
   var _startEvent = { type: "start" };
   var _endEvent = { type: "end" };
@@ -24348,7 +24348,7 @@ void main() {
     }
   }
 
-  // node_modules/three/examples/jsm/utils/BufferGeometryUtils.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three/examples/jsm/utils/BufferGeometryUtils.js
   function toTrianglesDrawMode(geometry, drawMode) {
     if (drawMode === TrianglesDrawMode) {
       console.warn("THREE.BufferGeometryUtils.toTrianglesDrawMode(): Geometry already defined as triangles.");
@@ -24404,7 +24404,7 @@ void main() {
     }
   }
 
-  // node_modules/three/examples/jsm/loaders/GLTFLoader.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three/examples/jsm/loaders/GLTFLoader.js
   var GLTFLoader = class extends Loader {
     constructor(manager) {
       super(manager);
@@ -26888,7 +26888,7 @@ void main() {
     });
   }
 
-  // node_modules/three/examples/jsm/environments/RoomEnvironment.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three/examples/jsm/environments/RoomEnvironment.js
   var RoomEnvironment = class extends Scene {
     constructor() {
       super();
@@ -26977,7 +26977,7 @@ void main() {
     return material;
   }
 
-  // node_modules/three-mesh-bvh/src/core/Constants.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/Constants.js
   var CENTER = 0;
   var AVERAGE = 1;
   var SAH = 2;
@@ -26989,7 +26989,7 @@ void main() {
   var FLOAT32_EPSILON = Math.pow(2, -24);
   var SKIP_GENERATION = /* @__PURE__ */ Symbol("SKIP_GENERATION");
 
-  // node_modules/three-mesh-bvh/src/core/build/geometryUtils.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/geometryUtils.js
   function getVertexCount(geo) {
     return geo.index ? geo.index.count : geo.attributes.position.count;
   }
@@ -27062,7 +27062,7 @@ void main() {
     return vertexCount !== total;
   }
 
-  // node_modules/three-mesh-bvh/src/core/build/computeBoundsUtils.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/computeBoundsUtils.js
   function getBounds(triangleBounds, offset, count, target, centroidTarget) {
     let minx = Infinity;
     let miny = Infinity;
@@ -27179,7 +27179,7 @@ void main() {
     return triangleBounds;
   }
 
-  // node_modules/three-mesh-bvh/src/utils/ArrayBoxUtilities.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/ArrayBoxUtilities.js
   function arrayToBox(nodeIndex32, array, target) {
     target.min.x = array[nodeIndex32];
     target.min.y = array[nodeIndex32 + 1];
@@ -27237,7 +27237,7 @@ void main() {
     return 2 * (d0 * d1 + d1 * d2 + d2 * d0);
   }
 
-  // node_modules/three-mesh-bvh/src/core/build/splitUtils.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/splitUtils.js
   var BIN_COUNT = 32;
   var binsSort = (a, b) => a.candidate - b.candidate;
   var sahBins = new Array(BIN_COUNT).fill().map(() => {
@@ -27411,14 +27411,14 @@ void main() {
     return avg / count;
   }
 
-  // node_modules/three-mesh-bvh/src/core/MeshBVHNode.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/MeshBVHNode.js
   var MeshBVHNode = class {
     constructor() {
       this.boundingData = new Float32Array(6);
     }
   };
 
-  // node_modules/three-mesh-bvh/src/core/build/sortUtils.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/sortUtils.generated.js
   function partition(indirectBuffer, index, triangleBounds, offset, count, split) {
     let left = offset;
     let right = offset + count - 1;
@@ -27450,7 +27450,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/build/sortUtils_indirect.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/sortUtils_indirect.generated.js
   function partition_indirect(indirectBuffer, index, triangleBounds, offset, count, split) {
     let left = offset;
     let right = offset + count - 1;
@@ -27480,7 +27480,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/utils/nodeBufferUtils.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/nodeBufferUtils.js
   function IS_LEAF(n16, uint16Array2) {
     return uint16Array2[n16 + 15] === 65535;
   }
@@ -27503,7 +27503,7 @@ void main() {
     return n32;
   }
 
-  // node_modules/three-mesh-bvh/src/core/build/buildUtils.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/buildUtils.js
   var float32Array;
   var uint32Array;
   var uint16Array;
@@ -27566,7 +27566,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/build/buildTree.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/buildTree.js
   function generateIndirectBuffer(geometry, useSharedArrayBuffer) {
     const triCount = (geometry.index ? geometry.index.count : geometry.attributes.position.count) / 3;
     const useUint32 = triCount > 2 ** 16;
@@ -27672,7 +27672,7 @@ void main() {
     });
   }
 
-  // node_modules/three-mesh-bvh/src/math/SeparatingAxisBounds.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/math/SeparatingAxisBounds.js
   var SeparatingAxisBounds = class {
     constructor() {
       this.min = Infinity;
@@ -27753,7 +27753,7 @@ void main() {
     };
   })();
 
-  // node_modules/three-mesh-bvh/src/math/MathUtilities.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/math/MathUtilities.js
   var closestPointLineToLine = (function() {
     const dir1 = new Vector3();
     const dir2 = new Vector3();
@@ -27871,7 +27871,7 @@ void main() {
     };
   })();
 
-  // node_modules/three-mesh-bvh/src/math/ExtendedTriangle.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/math/ExtendedTriangle.js
   var ZERO_EPSILON = 1e-15;
   function isNearZero(value) {
     return Math.abs(value) < ZERO_EPSILON;
@@ -28184,7 +28184,7 @@ void main() {
     };
   })();
 
-  // node_modules/three-mesh-bvh/src/math/OrientedBox.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/math/OrientedBox.js
   var OrientedBox = class {
     constructor(min, max, matrix) {
       this.isOrientedBox = true;
@@ -28445,7 +28445,7 @@ void main() {
     };
   })();
 
-  // node_modules/three-mesh-bvh/src/utils/PrimitivePool.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/PrimitivePool.js
   var PrimitivePool = class {
     constructor(getNewPrimitive) {
       this._getNewPrimitive = getNewPrimitive;
@@ -28464,7 +28464,7 @@ void main() {
     }
   };
 
-  // node_modules/three-mesh-bvh/src/utils/ExtendedTrianglePool.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/ExtendedTrianglePool.js
   var ExtendedTrianglePoolBase = class extends PrimitivePool {
     constructor() {
       super(() => new ExtendedTriangle());
@@ -28472,7 +28472,7 @@ void main() {
   };
   var ExtendedTrianglePool = /* @__PURE__ */ new ExtendedTrianglePoolBase();
 
-  // node_modules/three-mesh-bvh/src/core/utils/BufferStack.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/BufferStack.js
   var _BufferStack = class {
     constructor() {
       this.float32Array = null;
@@ -28502,7 +28502,7 @@ void main() {
   };
   var BufferStack = new _BufferStack();
 
-  // node_modules/three-mesh-bvh/src/core/cast/shapecast.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/shapecast.js
   var _box1;
   var _box2;
   var boxStack = [];
@@ -28624,7 +28624,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/closestPointToPoint.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/closestPointToPoint.js
   var temp = /* @__PURE__ */ new Vector3();
   var temp1 = /* @__PURE__ */ new Vector3();
   function closestPointToPoint(bvh, point, target = {}, minThreshold = 0, maxThreshold = Infinity) {
@@ -28665,7 +28665,7 @@ void main() {
     return target;
   }
 
-  // node_modules/three-mesh-bvh/src/utils/ThreeRayIntersectUtilities.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/ThreeRayIntersectUtilities.js
   var _vA = /* @__PURE__ */ new Vector3();
   var _vB = /* @__PURE__ */ new Vector3();
   var _vC = /* @__PURE__ */ new Vector3();
@@ -28752,7 +28752,7 @@ void main() {
     return null;
   }
 
-  // node_modules/three-mesh-bvh/src/utils/TriangleUtilities.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/TriangleUtilities.js
   function setTriangle(tri, i, index, pos) {
     const ta = tri.a;
     const tb = tri.b;
@@ -28776,7 +28776,7 @@ void main() {
     tc.z = pos.getZ(i2);
   }
 
-  // node_modules/three-mesh-bvh/src/core/utils/iterationUtils.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/iterationUtils.generated.js
   function intersectTris(bvh, side, ray2, offset, count, intersections, near, far) {
     const { geometry, _indirectBuffer } = bvh;
     for (let i = offset, end = offset + count; i < end; i++) {
@@ -28813,7 +28813,7 @@ void main() {
     return false;
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/refit.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/refit.generated.js
   function refit(bvh, nodeIndices = null) {
     if (nodeIndices && Array.isArray(nodeIndices)) {
       nodeIndices = new Set(nodeIndices);
@@ -28913,7 +28913,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/utils/intersectUtils.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/intersectUtils.js
   function intersectRay(nodeIndex32, array, ray2, near, far) {
     let tmin, tmax, tymin, tymax, tzmin, tzmax;
     const invdirx = 1 / ray2.direction.x, invdiry = 1 / ray2.direction.y, invdirz = 1 / ray2.direction.z;
@@ -28956,7 +28956,7 @@ void main() {
     return tmin <= far && tmax >= near;
   }
 
-  // node_modules/three-mesh-bvh/src/core/utils/iterationUtils_indirect.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/iterationUtils_indirect.generated.js
   function intersectTris_indirect(bvh, side, ray2, offset, count, intersections, near, far) {
     const { geometry, _indirectBuffer } = bvh;
     for (let i = offset, end = offset + count; i < end; i++) {
@@ -28994,7 +28994,7 @@ void main() {
     return false;
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/raycast.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/raycast.generated.js
   function raycast(bvh, root, side, ray2, intersects, near, far) {
     BufferStack.setBuffer(bvh._roots[root]);
     _raycast(0, bvh, side, ray2, intersects, near, far);
@@ -29020,7 +29020,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/raycastFirst.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/raycastFirst.generated.js
   var _xyzFields = ["x", "y", "z"];
   function raycastFirst(bvh, root, side, ray2, near, far) {
     BufferStack.setBuffer(bvh._roots[root]);
@@ -29071,7 +29071,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/intersectsGeometry.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/intersectsGeometry.generated.js
   var boundingBox = /* @__PURE__ */ new Box3();
   var triangle = /* @__PURE__ */ new ExtendedTriangle();
   var triangle2 = /* @__PURE__ */ new ExtendedTriangle();
@@ -29155,7 +29155,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/closestPointToGeometry.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/closestPointToGeometry.generated.js
   var tempMatrix = /* @__PURE__ */ new Matrix4();
   var obb3 = /* @__PURE__ */ new OrientedBox();
   var obb22 = /* @__PURE__ */ new OrientedBox();
@@ -29294,7 +29294,7 @@ void main() {
     return target1;
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/refit_indirect.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/refit_indirect.generated.js
   function refit_indirect(bvh, nodeIndices = null) {
     if (nodeIndices && Array.isArray(nodeIndices)) {
       nodeIndices = new Set(nodeIndices);
@@ -29398,7 +29398,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/raycast_indirect.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/raycast_indirect.generated.js
   function raycast_indirect(bvh, root, side, ray2, intersects, near, far) {
     BufferStack.setBuffer(bvh._roots[root]);
     _raycast2(0, bvh, side, ray2, intersects, near, far);
@@ -29424,7 +29424,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/raycastFirst_indirect.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/raycastFirst_indirect.generated.js
   var _xyzFields2 = ["x", "y", "z"];
   function raycastFirst_indirect(bvh, root, side, ray2, near, far) {
     BufferStack.setBuffer(bvh._roots[root]);
@@ -29475,7 +29475,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/intersectsGeometry_indirect.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/intersectsGeometry_indirect.generated.js
   var boundingBox2 = /* @__PURE__ */ new Box3();
   var triangle3 = /* @__PURE__ */ new ExtendedTriangle();
   var triangle22 = /* @__PURE__ */ new ExtendedTriangle();
@@ -29560,7 +29560,7 @@ void main() {
     }
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/closestPointToGeometry_indirect.generated.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/closestPointToGeometry_indirect.generated.js
   var tempMatrix2 = /* @__PURE__ */ new Matrix4();
   var obb5 = /* @__PURE__ */ new OrientedBox();
   var obb24 = /* @__PURE__ */ new OrientedBox();
@@ -29702,12 +29702,12 @@ void main() {
     return target1;
   }
 
-  // node_modules/three-mesh-bvh/src/utils/BufferUtils.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/BufferUtils.js
   function isSharedArrayBufferSupported() {
     return typeof SharedArrayBuffer !== "undefined";
   }
 
-  // node_modules/three-mesh-bvh/src/core/cast/bvhcast.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/bvhcast.js
   var _bufferStack1 = new BufferStack.constructor();
   var _bufferStack2 = new BufferStack.constructor();
   var _boxPool = new PrimitivePool(() => new Box3());
@@ -29978,7 +29978,7 @@ void main() {
     return result;
   }
 
-  // node_modules/three-mesh-bvh/src/core/MeshBVH.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/MeshBVH.js
   var obb6 = /* @__PURE__ */ new OrientedBox();
   var tempBox = /* @__PURE__ */ new Box3();
   var DEFAULT_OPTIONS = {
@@ -30301,7 +30301,7 @@ void main() {
     }
   };
 
-  // node_modules/three-mesh-bvh/src/utils/GeometryRayIntersectUtilities.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/GeometryRayIntersectUtilities.js
   function convertRaycastIntersect(hit, object, raycaster2) {
     if (hit === null) {
       return null;
@@ -30312,7 +30312,7 @@ void main() {
     return hit;
   }
 
-  // node_modules/three-mesh-bvh/src/utils/ExtensionUtilities.js
+  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/ExtensionUtilities.js
   var BatchedMesh2 = BatchedMesh || null;
   var IS_REVISION_166 = parseInt(REVISION) >= 166;
   var ray = /* @__PURE__ */ new Ray();
@@ -30410,7 +30410,7 @@ void main() {
     this.boundsTree = null;
   }
 
-  // ../app/catalog.js
+  // Mechanical floral puzzle decor/app/catalog.js
   var CATALOG = [
     {
       "id": "pot_1",
@@ -31093,7 +31093,7 @@ void main() {
   ];
   var byId = Object.fromEntries(CATALOG.map((p) => [p.id, p]));
 
-  // ../app/main.js
+  // Mechanical floral puzzle decor/app/main.js
   var canvas = document.getElementById("stage");
   var renderer = new WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -31356,7 +31356,6 @@ void main() {
   function updatePlayUI() {
     const playing = anyBloomPlaying();
     const btn = $("#btnBloomPlay");
-    btn.textContent = playing ? "停止播放" : "全部播放";
     btn.setAttribute("aria-pressed", String(playing));
     bloomPlayRefs.forEach((pb, key) => {
       const entry = flowerMixers.find((e) => `${e.slotIdx}:${e.stepIndex}` === key);
@@ -32077,7 +32076,6 @@ void main() {
     ringsVisible = !ringsVisible;
     slotMarkers.visible = ringsVisible;
     $("#btnRings").setAttribute("aria-pressed", String(!ringsVisible));
-    $("#btnRings").textContent = ringsVisible ? "隱藏光圈" : "顯示光圈";
     if (!ringsVisible) {
       hoveredSlot = -1;
       hoveredPiece = null;

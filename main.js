@@ -305,7 +305,7 @@ const anyBloomPlaying = () => flowerMixers.some(e => e.playing);
 function updatePlayUI() {
   const playing = anyBloomPlaying();
   const btn = $('#btnBloomPlay');
-  btn.textContent = playing ? '停止播放' : '全部播放';
+  // 按鈕已 icon 化:顯示/停止的 icon 由 aria-pressed 驅動 CSS 切換,不再寫入文字
   btn.setAttribute('aria-pressed', String(playing));
   bloomPlayRefs.forEach((pb, key) => {
     const entry = flowerMixers.find(e => `${e.slotIdx}:${e.stepIndex}` === key);
@@ -1048,8 +1048,7 @@ $('#btnRule').onclick = () => { $('#ruleModal').hidden = false; };
 $('#btnRings').onclick = () => {
   ringsVisible = !ringsVisible;
   slotMarkers.visible = ringsVisible;
-  $('#btnRings').setAttribute('aria-pressed', String(!ringsVisible));
-  $('#btnRings').textContent = ringsVisible ? '隱藏光圈' : '顯示光圈';
+  $('#btnRings').setAttribute('aria-pressed', String(!ringsVisible)); // icon 由 aria-pressed 驅動 CSS 切換
   if (!ringsVisible) { hoveredSlot = -1; hoveredPiece = null; hideSpecimen(); }
 };
 $('#btnRuleClose').onclick = () => { $('#ruleModal').hidden = true; };

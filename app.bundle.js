@@ -31897,7 +31897,8 @@ void main() {
     const UNIT_S = new Vector3(1, 1, 1);
     for (let i = 0; i < steps.length; i++) {
       const st = steps[i];
-      const a = assets[st.v];
+      const a = assets[st?.v];
+      if (!a) continue;
       if (!a) continue;
       const obj = a.template.clone(true);
       cloneMaterials(obj);
@@ -32503,7 +32504,7 @@ void main() {
     return p;
   }
   function migrateSlots() {
-    state.slots = (state.slots || []).map((steps) => steps.filter((st) => st && st.v));
+    state.slots = (state.slots || []).map((steps) => Array.isArray(steps) ? steps.filter((st) => st && st.v) : []).filter((steps) => Array.isArray(steps));
     for (const steps of state.slots) for (const st of steps) {
       if (st.k !== "stem") continue;
       if (!st.group) {

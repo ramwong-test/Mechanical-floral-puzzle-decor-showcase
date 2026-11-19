@@ -32308,8 +32308,7 @@ void main() {
           (ang) => ang === 0 ? "Straight" : `${ang}°`,
           (ang) => {
             st.angle = ang;
-            if (ang === 0) st.side = null;
-            else if (!st.side) st.side = "L";
+            if (ang > 0 && !st.side) st.side = "L";
             resolveStem(st);
             replaceChain(selectedSlot);
             saveState();

@@ -31724,6 +31724,7 @@ void main() {
         assembly.remove(child);
       }
     }
+    flowerMixers = flowerMixers.filter((e) => e.slotIdx !== slotIdx && e.obj.parent);
     const steps = state.slots[slotIdx];
     if (steps?.length) {
       placeChain(slotFrames[slotIdx], steps, slotIdx).forEach(
@@ -32495,11 +32496,23 @@ void main() {
     withExportResolution(() => {
       const plinth2 = scene.children.find((o) => o.userData.isPlinth);
       if (plinth2) plinth2.visible = false;
+      const camSaved = camera.position.clone();
+      const tgtSaved = controls.target.clone();
+      const dir = camera.position.clone().sub(controls.target).normalize();
+      let box = new Box3().setFromObject(assembly);
+      const size = box.getSize(new Vector3());
+      const dist = Math.max(size.x, size.y, size.z) * 1.55 + 0.05;
+      camera.position.copy(box.getCenter(new Vector3())).addScaledVector(dir, dist);
+      camera.lookAt(box.getCenter(new Vector3()));
+      renderer.render(scene, camera);
       const { sx, sy, cw, ch } = computeCrop();
       const c2 = document.createElement("canvas");
       c2.width = cw;
       c2.height = ch;
       c2.getContext("2d").drawImage(canvas, sx, sy, cw, ch, 0, 0, cw, ch);
+      camera.position.copy(camSaved);
+      controls.target.copy(tgtSaved);
+      controls.update();
       if (plinth2) plinth2.visible = true;
       c2.toBlob((blob) => {
         downloadBlob(blob, "mechanical-floral.png");

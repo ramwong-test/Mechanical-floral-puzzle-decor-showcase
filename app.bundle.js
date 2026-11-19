@@ -31552,7 +31552,14 @@ void main() {
     for (let p = 0; p < list.length; p++) {
       for (let r = p + 1; r < list.length; r++) {
         const a = list[p], b = list[r];
-        if (a.s === b.s) continue;
+        if (a.s === b.s) {
+          const lo = Math.min(a.i, b.i), hi = Math.max(a.i, b.i);
+          if (hi - lo <= 1) continue;
+          if (hi - lo === 2) {
+            const mid = (state.slots[a.s] || [])[lo + 1];
+            if (mid?.k === "conn" && byId[mid?.v]?.leaf) continue;
+          }
+        }
         if (!obbsCollide(a, b)) continue;
         if (bvhReady) {
           if (exactMeshPair(a, b)) record(a, b, null);

@@ -15,6 +15,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 import { CATALOG, byId } from './catalog.js';
+import GIF from 'gif.js/dist/gif.js';
 
 /* ---------------- 三維舞台 ---------------- */
 const canvas = document.getElementById('stage');
@@ -27,7 +28,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#20241f');
+scene.background = new THREE.Color('#9a9a9a'); // 全不透明灰
 
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -120,7 +121,7 @@ async function decodeModelB64(b64) {
   const bin = new Uint8Array(raw.length);
   for (let i = 0; i < raw.length; i++) bin[i] = raw.charCodeAt(i);
   if (!('DecompressionStream' in globalThis)) {
-    throw new Error('此瀏覽器不支援 DecompressionStream,請改用較新的 Chrome / Edge / Firefox。');
+    throw new Error('This browser does not support DecompressionStream. Please use a newer Chrome / Edge / Firefox.');
   }
   const stream = new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip'));
   return new Response(stream).arrayBuffer();
@@ -139,12 +140,12 @@ async function loadAll(onProgress) {
         try {
           gltf = await gltfLoader.loadAsync(MODEL_BASE + def.path);
         } catch (e) {
-          console.warn('models/ 讀取失敗,改用內嵌:', def.path);
+          console.warn('models/ fetch failed, falling back to embedded data:', def.path);
         }
       }
       if (!gltf) {
         const b64 = window.__MODEL_DATA?.[id];
-        if (!b64) { console.warn('缺少模型資料:', id); done++; continue; }
+        if (!b64) { console.warn('Missing model data:', id); done++; continue; }
         let buf;
         try {
           buf = await decodeModelB64(b64);
@@ -172,10 +173,10 @@ async function loadAll(onProgress) {
   await Promise.all(workers);
 }
 
-/* ---------------- 花盆縮圖(獨立小渲染器,產生 dataURL 後釋放) ---------------- */
-const potPreviews = {};
+/* ---------------- Piece thumbnails (separate mini renderer; dataURLs are reused) ---------------- */
+const piecePreviews = {};
 
-function makePotPreviews() {
+function makePiecePreviews() {
   const r2 = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   r2.setSize(160, 160);
   r2.setPixelRatio(1);
@@ -189,7 +190,7 @@ function makePotPreviews() {
   d2.position.set(-0.7, 0.3, -0.6);
   s2.add(d2);
   const cam = new THREE.PerspectiveCamera(33, 1, 0.01, 10);
-  for (const p of CATALOG.filter(x => x.kind === 'pot')) {
+  for (const p of CATALOG.filter(x => x.kind === 'pot' || x.kind === 'end' || x.kind === 'conn' || x.kind === 'stem')) {
     const obj = assets[p.id].template;
     s2.add(obj);
     obj.updateMatrixWorld(true);
@@ -199,7 +200,7 @@ function makePotPreviews() {
     cam.position.copy(c).addScaledVector(new THREE.Vector3(0.55, 0.42, 0.72).normalize(), radius * 3.1);
     cam.lookAt(c);
     r2.render(s2, cam);
-    potPreviews[p.id] = r2.domElement.toDataURL('image/png');
+    piecePreviews[p.id] = r2.domElement.toDataURL('image/png');
     s2.remove(obj);
   }
   r2.dispose();
@@ -225,6 +226,62 @@ function decodeState(str) {
 
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* 私密模式等情況,略過 */ }
+  if (typeof activeDesign === 'number' && activeDesign >= 0) saveDesign(activeDesign);
+}
+
+/* ---------------- Design slots:3 個自動儲存的設計 ---------------- */
+const DESIGN_COUNT = 3;
+let activeDesign = -1; // -1 = 未在任何 design 中
+const designKey = i => `mechanical-floral-design-${i}`;
+
+function loadDesign(i) {
+  try { const raw = localStorage.getItem(designKey(i)); return raw ? JSON.parse(raw) : null; }
+  catch { return null; }
+}
+function saveDesign(i) {
+  if (i < 0) return;
+  try {
+    localStorage.setItem(designKey(i), JSON.stringify({ pot: state.pot, slots: state.slots }));
+    const dot = $('#designRow')?.children[i]?.querySelector('.dot');
+    if (dot) dot.classList.add('filled');
+  } catch { /* 略過 */ }
+}
+
+function renderDesignRow() {
+  const row = $('#designRow');
+  row.innerHTML = '';
+  for (let i = 0; i < DESIGN_COUNT; i++) {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.setAttribute('aria-pressed', String(activeDesign === i));
+    const has = !!loadDesign(i);
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (has ? ' filled' : '');
+    const t = document.createElement('span');
+    t.textContent = `Design ${i + 1}`;
+    b.append(dot, t);
+    b.title = has ? 'Saved design — click to switch' : 'Empty — click to start a new design';
+    b.onclick = () => switchDesign(i);
+    row.appendChild(b);
+  }
+}
+
+function switchDesign(i) {
+  if (activeDesign === i) return;
+  if (activeDesign >= 0) saveDesign(activeDesign); // 先存目前
+  activeDesign = i;
+  localStorage.setItem('mechanical-floral-design-active', String(i));
+  const d = loadDesign(i);
+  state.pot = d?.pot || 'pot_1';
+  state.slots = Array.isArray(d?.slots) ? d.slots.filter(Boolean) : [];
+  migrateSlots();
+  saveState();
+  selectedSlot = -1;
+  $('#secBuilder').hidden = true;
+  rebuild();
+  renderPotSelect();
+  renderSlotRow();
+  renderDesignRow();
 }
 
 function loadState() {
@@ -243,6 +300,7 @@ const QY = deg => new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1
 function placeChain(rootFrame, steps, slotIdx) {
   const placed = [];
   let frame = rootFrame; // { pos:Vector3, quat:Quaternion }
+  const UNIT_S = new THREE.Vector3(1, 1, 1);
   for (let i = 0; i < steps.length; i++) {
     const st = steps[i];
     const a = assets[st.v];
@@ -258,7 +316,11 @@ function placeChain(rootFrame, steps, slotIdx) {
 
     if (st.k === 'end' && a.clip) setupFlowerBloom(obj, a, slotIdx, i, st);
     if (st.k === 'stem' && a.head) frame = nextFrame(obj, a.head);
-    else if (st.k === 'conn' && a.out) frame = nextFrame(obj, a.out);
+    else if (st.k === 'conn' && a.out) {
+      // 連接器的自轉只轉動本件(葉片朝向);下游沿原軸繼續,不跟著旋轉
+      const m2 = new THREE.Matrix4().compose(frame.pos, frame.quat, UNIT_S).multiply(a.out);
+      frame = decompose(m2);
+    }
     else break; // end:鏈到此為止
   }
   return placed;
@@ -296,34 +358,14 @@ function setFlowerBloom(entry, b) {
   }
 }
 
-function setAllBloom(b) {
-  flowerMixers.forEach(e => setFlowerBloom(e, b));
-}
-
-const anyBloomPlaying = () => flowerMixers.some(e => e.playing);
-
 function updatePlayUI() {
-  const playing = anyBloomPlaying();
-  const btn = $('#btnBloomPlay');
-  // 按鈕已 icon 化:顯示/停止的 icon 由 aria-pressed 驅動 CSS 切換,不再寫入文字
-  btn.setAttribute('aria-pressed', String(playing));
   bloomPlayRefs.forEach((pb, key) => {
     const entry = flowerMixers.find(e => `${e.slotIdx}:${e.stepIndex}` === key);
     const on = !!entry?.playing;
     pb.textContent = on ? '⏸' : '▶';
     pb.setAttribute('aria-pressed', String(on));
-    pb.title = on ? '停止這朵的開闔展示' : '這朵花獨立開闔展示';
+    pb.title = on ? "Stop this flower's bloom cycle" : "Play this flower's bloom cycle";
   });
-}
-
-function updateBloomUI() {
-  const out = $('#bloomOut');
-  const slider = $('#bloomTimeline');
-  if (anyBloomPlaying()) {
-    const avg = flowerMixers.length ? flowerMixers.reduce((s, e) => s + e.bloom, 0) / flowerMixers.length : +slider.value / 100;
-    slider.value = Math.round(avg * 100);
-    out.textContent = `${Math.round(avg * 100)}%`;
-  }
 }
 
 function nextFrame(obj, localMat) {
@@ -476,7 +518,7 @@ function computeCollisions() {
   for (let p = 0; p < list.length; p++) {
     for (let r = p + 1; r < list.length; r++) {
       const a = list[p], b = list[r];
-      if (a.s === b.s && Math.abs(a.i - b.i) <= 1) continue; // 同鏈相鄰接頭
+      if (a.s === b.s) continue; // 同一條鏈上:零件經接頭相連,尖端互入是接頭幾何(葉片迴圈)造成的設計性接觸,不視為碰撞
       if (!obbsCollide(a, b)) continue;                      // OBB 快速排除
       if (bvhReady) {
         if (exactMeshPair(a, b)) record(a, b, null);
@@ -500,7 +542,7 @@ function computeCollisions() {
 }
 
 /* 除錯鉗子:console 可用 window.__dbg 檢查 */
-window.__dbg = { collisions: () => collisions, obbs: () => lastObbs, sat: obbsCollide, bvh: () => bvhReady, exact: exactMeshPair, pot: () => lastPot };
+window.__dbg = { collisions: () => collisions, obbs: () => lastObbs, sat: obbsCollide, bvh: () => bvhReady, exact: exactMeshPair, pot: () => lastPot, target: () => controls.target, camera: () => camera.position };
 
 function rebuild() {
   // 幾何是各模板共享的,不能 dispose;只釋放每個放置實體 clone 出來的材質
@@ -707,54 +749,129 @@ function showSpecimen(hit) {
   const piece = byId[hit?.pieceId];
   const steps = state.slots[hit?.slot] || [];
   $('#specimenText').innerHTML = piece
-    ? `${pieceDisplayName(piece)}<br><span class="sub">插槽 ${hit.slot + 1} · 該插槽共 ${steps.length} 個零件 · 點擊可調整</span>`
+    ? `${pieceDisplayName(piece)}<br><span class="sub">Slot ${hit.slot + 1} · ${steps.length} part(s) in this slot · click to adjust</span>`
     : '';
   specimen.hidden = !piece;
 }
 function hideSpecimen() { specimen.hidden = true; }
 
-/* ---------------- 顯示名稱 ---------------- */
-const SIDE_CN = { L: '左', R: '右' };
+/* ---------------- Display names ---------------- */
+const SIDE_EN = { L: 'L', R: 'R' };
 function pieceDisplayName(p) {
-  if (p.kind === 'pot') return `花盆 ${p.id.slice(4)} 號`;
+  if (p.kind === 'pot') return `Pot ${p.id.slice(4)}`;
   if (p.kind === 'stem') {
-    const ang = p.angle === 0 ? '直' : `${p.angle}°${SIDE_CN[p.side]}`;
-    return `${p.group} 類莖 (${p.len === 1 ? '短' : '長'}) ${ang}`;
+    const ang = p.angle === 0 ? 'Straight' : `${p.angle}°${SIDE_EN[p.side]}`;
+    return `Type-${p.group} Stem (${p.len === 1 ? 'Short' : 'Long'}) ${ang}`;
   }
   if (p.kind === 'conn') {
-    if (!p.leaf) return '素連接器';
-    const cn = { tulip: '鬱金香', mum: '菊花', rose: '玫瑰' }[p.leaf.flower];
-    return `${cn}葉 ${p.leaf.variant.toUpperCase()} ${SIDE_CN[p.leaf.side.toUpperCase()]}`;
+    if (!p.leaf) return 'Plain Connector';
+    return `${{ tulip: 'Tulip', mum: 'Mum', rose: 'Rose' }[p.leaf.flower]} Leaf ${p.leaf.variant.toUpperCase()} ${SIDE_EN[p.leaf.side.toUpperCase()]}`;
   }
   return p.display || p.id;
 }
 
-/* ---------------- 面板:花盆(縮圖卡片) ---------------- */
+/* ---------------- Panel: pot (select button + right-side submenu) ---------------- */
 let selectedSlot = -1;
+const potLabel = p => `Pot ${p.id.slice(4)}`;
+const potSlotCount = p => assets[p.id]?.slots.length ?? '?';
 
-function renderPotRow() {
-  const row = $('#potRow');
-  row.innerHTML = '';
+function renderPotSelect() {
+  const btn = $('#potBtn');
+  const cur = CATALOG.find(p => p.id === state.pot) || CATALOG.find(p => p.kind === 'pot');
+  btn.querySelector('.name').textContent = potLabel(cur);
+  btn.querySelector('.meta').textContent = `${potSlotCount(cur)} slots`;
+  renderPotMenu();
+}
+
+function renderPotMenu() {
+  const menu = $('#potMenu');
+  menu.innerHTML = '';
   CATALOG.filter(p => p.kind === 'pot').forEach(p => {
     const b = document.createElement('button');
-    b.className = 'pot-card';
-    const n = assets[p.id]?.slots.length ?? '?';
-    b.innerHTML = `
-      <img class="pot-thumb" src="${potPreviews[p.id] || ''}" alt="${p.id} 預覽">
-      <span class="pot-meta"><span class="pot-slots">${n}</span><i>slot</i></span>
-      <span class="pot-name">${p.id}</span>`;
-    b.title = pieceDisplayName(p) + ` — ${n} 個插槽`;
-    b.setAttribute('aria-pressed', state.pot === p.id);
+    b.className = 'pot-item';
+    b.setAttribute('role', 'option');
+    b.setAttribute('aria-selected', String(state.pot === p.id));
+    const img = document.createElement('img');
+    img.className = 'pot-item-thumb';
+    img.src = piecePreviews[p.id] || '';
+    img.alt = potLabel(p);
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = potLabel(p);
+    const meta = document.createElement('span');
+    meta.className = 'meta';
+    meta.textContent = `${potSlotCount(p)} slots`;
+    b.append(img, name, meta);
     b.onclick = () => {
-      state.pot = p.id;
-      state.slots = [];
-      selectedSlot = -1;
-      $('#secBuilder').hidden = true;
-      saveState(); rebuild(); renderPotRow(); renderSlotRow();
+      const changed = state.pot !== p.id;
+      if (changed) {
+        state.pot = p.id;
+        state.slots = [];
+        selectedSlot = -1;
+        $('#secBuilder').hidden = true;
+        saveState();
+        rebuild();
+      }
+      closePotMenu();
+      renderPotSelect();
+      renderSlotRow();
     };
-    row.appendChild(b);
+    menu.appendChild(b);
   });
 }
+
+function updatePotMenu(open) {
+  const menu = $('#potMenu');
+  const btn = $('#potBtn');
+  if (open) {
+    menu.hidden = false; // display first so it can be measured
+    const r = btn.getBoundingClientRect();
+    menu.style.left = `${r.right + 10}px`;
+    menu.style.top = `${Math.max(12, Math.min(r.top, innerHeight - menu.offsetHeight - 12))}px`;
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+const closePotMenu = () => updatePotMenu(false);
+$('#potBtn').onclick = () => updatePotMenu($('#potMenu').hidden);
+document.addEventListener('pointerdown', ev => {
+  if ($('#potMenu').hidden) return;
+  if (!ev.target.closest('#potMenu') && !ev.target.closest('#potBtn')) closePotMenu();
+});
+$('#panel').addEventListener('scroll', () => { if (!$('#potMenu').hidden) closePotMenu(); }, { passive: true });
+
+/* 面板整體收合 / 展開:切換鈕在面板開啟時浮在 Pot 列右側,收起時移回品牌下方 */
+function positionPanelToggle() {
+  const btn = $('#btnPanel');
+  const panel = $('#panel');
+  if (panel.hidden) {
+    btn.style.left = '-13px';
+    btn.style.top = `${Math.round(innerHeight / 2 - btn.offsetHeight / 2)}px`;
+  } else {
+    const r = panel.getBoundingClientRect();
+    btn.style.left = `${Math.round(r.right - 13)}px`;
+    btn.style.top = `${Math.round(r.top + r.height / 2 - btn.offsetHeight / 2)}px`;
+  }
+}
+
+$('#btnPanel').onclick = () => {
+  const panel = $('#panel');
+  const show = panel.hidden;
+  panel.hidden = !show;
+  $('#btnPanel').setAttribute('aria-pressed', String(show));
+  if (!show) closePotMenu();
+  positionPanelToggle();
+};
+
+/* Slots 區塊收合:外框按鈕隨內容變大 */
+$('#slotsToggle').onclick = () => {
+  const open = !$('#slotsBody').hidden;
+  $('#slotsBody').hidden = open;
+  $('#slotsGroup').classList.toggle('open', !open);
+  $('#slotsToggle').setAttribute('aria-expanded', String(!open));
+};
 
 /* ---------------- 面板:插槽(依 slot 實際位置擺放的圓形按鈕) ---------------- */
 function chainDone(steps) {
@@ -768,23 +885,22 @@ function updateCollideStatus() {
   if (!collisions.pairs.length) { el.hidden = true; return; }
   const keys = new Set();
   for (const p of collisions.pairs) {
-    if (!p.b) keys.add(`slot ${p.a.s + 1}(零件與花盆)`);
-    else if (p.a.s === p.b.s) keys.add(`slot ${p.a.s + 1}(彼此零件)`);
+    if (!p.b) keys.add(`slot ${p.a.s + 1} (piece vs pot)`);
+    else if (p.a.s === p.b.s) keys.add(`slot ${p.a.s + 1} (pieces clash)`);
     else keys.add(`slot ${Math.min(p.a.s, p.b.s) + 1} × slot ${Math.max(p.a.s, p.b.s) + 1}`);
   }
-  el.textContent = bvhReady ? `⚠ 碰撞:${[...keys].join('、')}` : `⚠ 疑似交疊(近似檢測):${[...keys].join('、')}`;
+  el.textContent = bvhReady ? `⚠ Collision: ${[...keys].join(', ')}` : `⚠ Possible overlap (approximate): ${[...keys].join(', ')}`;
   el.hidden = false;
 }
 
 function renderSlotRow() {
   const map = $('#slotRow');
-  map.className = 'slot-map';
+  map.className = 'slot-grid';
   map.innerHTML = '';
-  if (!state.pot || !slotFrames.length) return;
-  // slot (x,z) 正規化到 [22%, 78%](保留相對位置概念,間距收緊)
-  const xs = slotFrames.map(f => f.pos.x), zs = slotFrames.map(f => f.pos.z);
-  const span = (v) => Math.max(...v) - Math.min(...v);
-  const toPct = (v, arr) => span(arr) < 1e-5 ? 50 : 22 + ((v - Math.min(...arr)) / span(arr)) * 56;
+  if (!state.pot || !slotFrames.length) { map.hidden = true; return; }
+  map.hidden = false;
+  // 每行格數 = ceil(sqrt(n))(2→1 行 2 格、4→2x2、9→3x3、16→4x4);第 4 欄軌道同尺寸、可空
+  const cols = Math.min(4, Math.max(1, Math.ceil(Math.sqrt(slotFrames.length))));
   for (let i = 0; i < slotFrames.length; i++) {
     const b = document.createElement('button');
     b.className = 'slot-node';
@@ -794,9 +910,8 @@ function renderSlotRow() {
     if (collisions.bySlot.has(i)) b.classList.add('collide');
     else if (st === 'warn') b.classList.add('warn');
     else if (st === 'done') b.classList.add('filled');
-    b.style.left = `${toPct(slotFrames[i].pos.x, xs)}%`;
-    b.style.top = `${toPct(slotFrames[i].pos.z, zs)}%`;
     b.setAttribute('aria-pressed', String(selectedSlot === i));
+    b.style.gridColumn = String((i % cols) + 1);
     b.onclick = () => selectSlot(i);
     map.appendChild(b);
   }
@@ -805,7 +920,7 @@ function renderSlotRow() {
 function selectSlot(i) {
   selectedSlot = i;
   $('#secBuilder').hidden = false;
-  $('#builderTitle').textContent = `組裝 slot ${i + 1}`;
+  $('#builderTitle').textContent = `Assemble slot ${i + 1}`;
   renderSlotRow();
   renderBuilder();
 }
@@ -822,98 +937,166 @@ function suggestSpin(slotFrame, piece) {
   return Math.round((THREE.MathUtils.radToDeg(rad) + 360) / 5) * 5 % 360;
 }
 
-function stemChips(group, onPick, len) {
-  const grid = document.createElement('div');
-  grid.className = 'picker-grid';
-  CATALOG.filter(p => p.kind === 'stem' && p.group === group && p.len === len).forEach(p => {
+/* Resolve a stem step's concrete model from its parameters */
+function stemPieceFor(group, len, angle, side) {
+  return CATALOG.find(x => x.kind === 'stem' && x.group === group &&
+    x.len === len && x.angle === angle &&
+    (angle === 0 ? !x.side : (x.side || '').toUpperCase() === (side || 'L').toUpperCase()));
+}
+function resolveStem(st) {
+  const p = stemPieceFor(st.group, st.len, st.angle, st.side);
+  if (p) st.v = p.id;
+  return p;
+}
+/* Older saved chains keep only v: derive stem parameters back from the catalog.
+   Also drop broken/null steps left by previous versions, and re-map stem ids
+   renamed across naming conventions (stem_1B_15L → stem_1B_15_L). */
+function migrateSlots() {
+  state.slots = (state.slots || []).map(steps => steps.filter(st => st && st.v));
+  for (const steps of state.slots) for (const st of steps) {
+    if (st.k !== 'stem') continue;
+    if (!st.group) {
+      const p = byId[st.v];
+      if (p) { st.group = p.group; st.len = p.len; st.angle = p.angle; st.side = p.side; continue; }
+    }
+    if (!byId[st.v]) {
+      // Unknown stem id (e.g. renamed files): parse the old id and resolve anew
+      const m = /^stem_([13])([AB])_(\d+)(?:_?)([LR])?/i.exec(st.v || '');
+      if (m) {
+        st.group = m[2].toUpperCase(); st.len = +m[1]; st.angle = +m[3];
+        st.side = m[4] ? m[4].toUpperCase() : null;
+      }
+      resolveStem(st); // may set v again; stays broken if still unresolvable
+    }
+  }
+}
+
+/* Standard labelled slider row */
+function ctlRow(label, min, max, step, value, fmt, oninput) {
+  const row = document.createElement('div');
+  row.className = 'spin-row';
+  row.innerHTML = `<label></label><input type="range" min="${min}" max="${max}" step="${step}" value="${value}"><output></output>`;
+  row.querySelector('label').textContent = label;
+  const input = row.querySelector('input');
+  const out = row.querySelector('output');
+  out.textContent = fmt(value);
+  input.oninput = () => { out.textContent = fmt(+input.value); oninput(+input.value); };
+  return { row, input, out };
+}
+const sideFmtLR = val => (val ? 'R' : 'L');
+
+/* Leaf-folder options = leaf connectors + lotus-leaf ends */
+function leafOptions() {
+  return CATALOG.filter(x => (x.kind === 'conn' && x.leaf) || (x.kind === 'end' && x.type === 'lotus-leaf'));
+}
+const flowerOptions = () => CATALOG.filter(x => x.kind === 'end' && x.type === 'flower');
+
+/* Shared right-side dropdown submenu (fixed, next to the anchor button) */
+const pieceMenu = $('#pieceMenu');
+function closePieceMenu() { pieceMenu.hidden = true; }
+function openPieceMenu(anchor, options, metaFor, onPick) {
+  pieceMenu.innerHTML = '';
+  options.forEach(p => {
     const b = document.createElement('button');
-    b.className = 'chip';
-    b.textContent = p.angle === 0 ? '直' : `${p.angle}°${SIDE_CN[p.side]}`;
-    b.title = pieceDisplayName(p) + `(${p.id})`;
-    b.dataset.piece = p.id;
-    b.onclick = () => onPick(p);
-    grid.appendChild(b);
+    b.className = 'pot-item';
+    b.setAttribute('role', 'option');
+    const img = document.createElement('img');
+    img.className = 'pot-item-thumb';
+    img.src = piecePreviews[p.id] || '';
+    img.alt = pieceDisplayName(p);
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = pieceDisplayName(p);
+    const meta = document.createElement('span');
+    meta.className = 'meta';
+    meta.textContent = metaFor(p);
+    b.append(img, name, meta);
+    b.onclick = () => { closePieceMenu(); onPick(p); };
+    pieceMenu.appendChild(b);
   });
-  return grid;
+  pieceMenu.hidden = false; // display first so it can be measured
+  const r = anchor.getBoundingClientRect();
+  pieceMenu.style.left = `${r.right + 10}px`;
+  pieceMenu.style.top = `${Math.max(12, Math.min(r.top, innerHeight - pieceMenu.offsetHeight - 12))}px`;
 }
 
-function renderStemPicker(stepIndex, group) {
-  // 兩類並列提示,各依短莖/長莖分組
-  const wrap = document.createElement('div');
-  const pick = p => addStep(stepIndex, { k: 'stem', v: p.id, s: suggestSpin(slotFrames[selectedSlot], p) });
-  const labels = { A: 'A 類莖(頭接花朵)', B: 'B 類莖(頭接連接器)' };
-  const groups = group ? [group] : ['A', 'B'];
-  groups.forEach(g => {
-    const p = document.createElement('p'); p.className = 'picker-label'; p.textContent = labels[g];
-    wrap.appendChild(p);
-    [[1, '短莖'], [3, '長莖']].forEach(([len, cn]) => {
-      const sub = document.createElement('p'); sub.className = 'picker-label'; sub.style.opacity = '.75';
-      sub.textContent = cn;
-      wrap.appendChild(sub);
-      wrap.appendChild(stemChips(g, pick, len));
-    });
-    wrap.appendChild(Object.assign(document.createElement('div'), { className: 'step-gap' }));
-  });
-  return wrap;
+/* Commit the chain after structural changes (models added/removed/swapped) */
+function setStemGroup(st, group) {
+  if (st.group === group) return;
+  st.group = group;
+  resolveStem(st);
+  saveState();
+  replaceChain(selectedSlot);
+  renderSlotRow();
+}
+function newStem(group, len, angle, side) {
+  const piece = stemPieceFor(group, len, angle, side) || CATALOG.find(p => p.kind === 'stem');
+  const s = suggestSpin(slotFrames[selectedSlot], piece);
+  return { k: 'stem', group, len, angle, side: side ?? null, s, v: piece.id };
 }
 
-function renderEndPicker(stepIndex) {
-  const wrap = document.createElement('div');
-  const p0 = document.createElement('p'); p0.className = 'picker-label'; p0.textContent = '接花或葉(A 莖頭 = 終點)';
-  const grid = document.createElement('div'); grid.className = 'picker-grid';
-  CATALOG.filter(x => x.kind === 'end').forEach(x => {
-    const b = document.createElement('button'); b.className = 'chip'; b.textContent = pieceDisplayName(x);
-    b.title = x.id;
-    b.dataset.piece = x.id;
-    b.onclick = () => addStep(stepIndex, { k: 'end', v: x.id, s: 0 });
-    grid.appendChild(b);
-  });
-  wrap.appendChild(p0); wrap.appendChild(grid);
-  return wrap;
-}
-
-function renderConnPicker(stepIndex) {
-  const wrap = document.createElement('div');
-  const p0 = document.createElement('p'); p0.className = 'picker-label'; p0.textContent = '接連接器(B 莖頭 = 可延伸)';
-  const grid = document.createElement('div'); grid.className = 'picker-grid';
-  CATALOG.filter(x => x.kind === 'conn').forEach(x => {
-    const b = document.createElement('button'); b.className = 'chip'; b.textContent = pieceDisplayName(x);
-    b.title = x.id;
-    b.dataset.piece = x.id;
-    b.onclick = () => addStep(stepIndex, { k: 'conn', v: x.id, s: 0 });
-    grid.appendChild(b);
-  });
-  wrap.appendChild(p0); wrap.appendChild(grid);
-  return wrap;
-}
-
-/* 下一步該出現哪種 picker */
+/* Which buttons follow the chain */
 function renderNextPicker() {
   const target = $('#nextPicker');
   target.innerHTML = '';
   const steps = state.slots[selectedSlot] || [];
   const last = steps[steps.length - 1];
-  let node;
-  if (!last) node = renderStemPicker(steps.length, null);
-  else if (last.k === 'end') {
-    const p = document.createElement('p'); p.className = 'hint'; p.textContent = '這條已開花,完成了。可再選其他插槽。';
-    node = p;
+
+  const addBtn = () => {
+    const b = document.createElement('button');
+    b.className = 'btn-add';
+    b.textContent = '+ Add stem';
+    b.onclick = () => addStep(steps.length, newStem('A', 1, 0, null));
+    return b;
+  };
+
+  if (!last) { target.appendChild(addBtn()); return; }
+
+  if (last.k === 'end') {
+    const p = document.createElement('p'); p.className = 'hint'; p.textContent = 'This chain is complete — pick another slot.';
+    target.appendChild(p);
+    return;
   }
-  else if (last.k === 'conn') node = renderStemPicker(steps.length, null);
-  else if (last.k === 'stem') {
-    if (byId[last.v].group === 'A') node = renderEndPicker(steps.length);
-    else node = renderConnPicker(steps.length);
-  }
-  if (last?.k === 'conn') {
-    const done = document.createElement('button');
-    done.className = 'danger-btn';
-    done.textContent = '就這樣完成(連接器上方留空)';
-    done.onclick = () => { toast('完成,可再選其他插槽。'); };
-    target.appendChild(node);
-    target.appendChild(done);
-  } else {
-    target.appendChild(node);
-  }
+
+  if (last.k === 'conn') { target.appendChild(addBtn()); return; }
+
+  /* last is a stem → its head can still take Leaf / Stem / Flower */
+  const btns = document.createElement('div');
+  btns.className = 'next-choices';
+  const make = (label, onclick) => {
+    const b = document.createElement('button');
+    b.className = 'chip choice';
+    b.textContent = label;
+    b.setAttribute('data-menu-anchor', 'yes');
+    b.onclick = onclick;
+    btns.appendChild(b);
+    return b;
+  };
+  make('Leaf', () => {
+    setStemGroup(last, 'A');
+    openPieceMenu(btns.querySelector('.choice'), leafOptions(),
+      p2 => (p2.kind === 'conn' ? 'Chain continues' : 'Chain ends here'),
+      p2 => {
+        if (p2.kind === 'conn') addStep(steps.length, { k: 'conn', v: p2.id, s: 0 });
+        else addStep(steps.length, { k: 'end', v: p2.id, s: 0, b: 1 });
+        renderBuilder();
+      });
+  });
+  make('Stem', () => {
+    setStemGroup(last, 'B');
+    addStep(steps.length, { k: 'conn', v: 'c_connector', s: 0 });
+    addStep(steps.length, newStem('A', 1, 0, null));
+    renderBuilder();
+  });
+  make('Flower', () => {
+    setStemGroup(last, 'A');
+    openPieceMenu(btns.querySelectorAll('.choice')[2], flowerOptions(),
+      () => 'Blooms', p2 => {
+        addStep(steps.length, { k: 'end', v: p2.id, s: 0, b: 1 });
+        renderBuilder();
+      });
+  });
+  target.appendChild(btns);
 }
 
 function renderChainTree() {
@@ -926,65 +1109,118 @@ function renderChainTree() {
     const row = document.createElement('div');
     row.className = 'chain-step';
     row.dataset.kind = st.k;
-    const kindCN = { stem: '莖', conn: '接', end: '花' }[st.k];
+    if (collisions.byStep.has(`${selectedSlot}:${i}`)) row.classList.add('collide');
+
+    /* head: remove + label + (play) + fold toggle — same order as section buttons */
     const head = document.createElement('div');
     head.className = 'head-row';
-    head.innerHTML = `<span class="k">${kindCN}</span><span class="v">${pieceDisplayName(byId[st.v])}</span>`;
-    if (collisions.byStep.has(`${selectedSlot}:${i}`)) row.classList.add('collide');
-    row.appendChild(head);
     const x = document.createElement('button');
-    x.className = 'x'; x.textContent = '×'; x.title = '從這節起移除';
+    x.className = 'x'; x.textContent = '×'; x.title = 'Remove from this step onward';
     x.onclick = () => removeStepFrom(i);
     head.appendChild(x);
-    // 動畫花:單朵播放按鈕(▶ 開/⏸ 停)
+    const kindEN = st.k === 'stem' ? 'Stem'
+      : st.k === 'conn' ? (byId[st.v]?.leaf ? pieceDisplayName(byId[st.v]) : 'Connector')
+      : pieceDisplayName(byId[st.v]);
+    const label = document.createElement('span');
+    label.className = 'v';
+    label.textContent = kindEN;
+    head.appendChild(label);
+    // Animated flower: per-flower play button (▶ open / ⏸ stop)
     if (st.k === 'end' && byId[st.v]?.anime) {
       const pb = document.createElement('button');
       pb.className = 'mini-play';
       pb.textContent = '▶';
-      pb.title = '這朵花獨立開闔展示';
+      pb.title = "Play this flower's bloom cycle";
       pb.setAttribute('aria-pressed', 'false');
       pb.onclick = () => toggleFlowerPlay(selectedSlot, i);
-      head.insertBefore(pb, x);
+      head.appendChild(pb);
       bloomPlayRefs.set(`${selectedSlot}:${i}`, pb);
     }
+    // Re-choose the end piece without removing the step
+    if (st.k === 'end') {
+      const isFlower = byId[st.v]?.type === 'flower';
+      const swap = document.createElement('button');
+      swap.className = 'mini-play';
+      swap.textContent = '⇄';
+      swap.title = isFlower ? 'Change flower' : 'Change lotus leaf';
+      const opts = isFlower ? flowerOptions() : CATALOG.filter(q => q.kind === 'end' && q.type === 'lotus-leaf');
+      swap.setAttribute('data-menu-anchor', 'yes');
+      swap.onclick = () => openPieceMenu(swap, opts,
+        () => (isFlower ? 'Blooms' : 'Chain ends here'),
+        p2 => {
+          if (p2.id === st.v) { closePieceMenu(); return; }
+          st.v = p2.id;
+          replaceChain(selectedSlot);
+          saveState();
+          renderBuilder();
+        });
+      head.appendChild(swap);
+    }
+    const fold = document.createElement('button');
+    fold.className = 'fold';
+    fold.title = 'Collapse / expand settings';
+    fold.setAttribute('aria-expanded', 'true');
+    fold.innerHTML = `<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`;
+    head.appendChild(fold);
+    row.appendChild(head);
 
-    // 自轉調整
-    const spinRow = document.createElement('div');
-    spinRow.className = 'spin-row';
-    spinRow.innerHTML = `<label>自轉</label><input type="range" min="0" max="355" step="5" value="${st.s}"><output>${st.s}°</output>`;
-    const range = spinRow.querySelector('input');
-    const out = spinRow.querySelector('output');
-    range.oninput = () => {
-      out.textContent = `${range.value}°`;
-      st.s = +range.value;
-      // 拖曳中只更新 3D(不重繪面板,滑桿才不會被重建打斷)
-      replaceChain(selectedSlot);
+    /* collapsible settings body */
+    const body = document.createElement('div');
+    body.className = 'ctl-body';
+    fold.onclick = () => {
+      body.hidden = !body.hidden;
+      fold.setAttribute('aria-expanded', String(!body.hidden));
     };
-    range.onchange = () => {
-      saveState();
-      renderSlotRow();
-      renderChainTree();
-      if (collisions.pairs.length) updateCollideStatus();
-    };
-    row.appendChild(spinRow);
+    row.appendChild(body);
 
-    // 花朵:開闔滑桿
-    if (st.k === 'end' && byId[st.v]?.anime) {
-      const bloomRow = document.createElement('div');
-      bloomRow.className = 'spin-row';
-      bloomRow.innerHTML = `<label>開花</label><input type="range" min="0" max="100" step="1" value="${Math.round((st.b ?? 1) * 100)}"><output>${Math.round((st.b ?? 1) * 100)}%</output>`;
-      const br = bloomRow.querySelector('input');
-      const bo = bloomRow.querySelector('output');
-      bloomRowRefs.set(`${selectedSlot}:${i}`, { input: br, output: bo });
-      br.oninput = () => {
-        bo.textContent = `${br.value}%`;
-        const entry = flowerMixers.find(e => e.slotIdx === selectedSlot && e.stepIndex === i);
-        if (entry) setFlowerBloom(entry, +br.value / 100);
-        $('#bloomTimeline').value = br.value;
-        $('#bloomOut').textContent = `${br.value}%`;
-        saveState();
-      };
-      row.appendChild(bloomRow);
+    if (st.k === 'stem') {
+      /* Height: short (1) / long (3) */
+      body.appendChild(ctlRow('Height', 0, 1, 1, st.len === 1 ? 0 : 1, val => (val ? 'Long' : 'Short'),
+        val => { st.len = val ? 3 : 1; resolveStem(st); replaceChain(selectedSlot); saveState(); renderSlotRow(); }).row);
+      /* Curvature: 0..90 in 15° steps */
+      body.appendChild(ctlRow('Curvature', 0, 90, 15, st.angle, ang => (ang === 0 ? 'Straight' : `${ang}°`),
+        ang => {
+          st.angle = ang; if (ang === 0) st.side = null; else if (!st.side) st.side = 'L';
+          resolveStem(st); replaceChain(selectedSlot); saveState(); renderSlotRow();
+        }).row);
+      /* Left / Right — always selectable; on straight stems the side is kept but visually unused */
+      body.appendChild(ctlRow('L / R', 0, 1, 1, st.side === 'R' ? 1 : 0, sideFmtLR,
+        val => { st.side = val ? 'R' : 'L'; if (st.angle > 0) { resolveStem(st); replaceChain(selectedSlot); } saveState(); }).row);
+      /* Rotation */
+      body.appendChild(ctlRow('Rotation', 0, 355, 5, st.s, deg => `${deg}°`,
+        val => { st.s = val; replaceChain(selectedSlot); saveState(); }).row);
+    } else if (st.k === 'conn' && byId[st.v]?.leaf) {
+      /* Leaf connector: side L/R + rotation */
+      const p = byId[st.v];
+      body.appendChild(ctlRow('L / R', 0, 1, 1, p.leaf.side.toUpperCase() === 'R' ? 1 : 0, sideFmtLR,
+        val => {
+          const side = val ? 'R' : 'L';
+          const np = CATALOG.find(q => q.kind === 'conn' && q.leaf &&
+            q.leaf.flower === p.leaf.flower && q.leaf.variant === p.leaf.variant &&
+            q.leaf.side.toUpperCase() === side);
+          if (np) { st.v = np.id; replaceChain(selectedSlot); saveState(); }
+        }).row);
+      body.appendChild(ctlRow('Rotation', 0, 355, 5, st.s, deg => `${deg}°`,
+        val => { st.s = val; replaceChain(selectedSlot); saveState(); }).row);
+    } else if (st.k === 'end') {
+      /* Flower: blooming %; both end types get rotation */
+      if (byId[st.v]?.anime) {
+        const bloomRow = document.createElement('div');
+        bloomRow.className = 'spin-row';
+        bloomRow.innerHTML = `<label>Blooming</label><input type="range" min="0" max="100" step="1" value="${Math.round((st.b ?? 1) * 100)}"><output>${Math.round((st.b ?? 1) * 100)}%</output>`;
+        const br = bloomRow.querySelector('input');
+        const bo = bloomRow.querySelector('output');
+        bloomRowRefs.set(`${selectedSlot}:${i}`, { input: br, output: bo });
+        br.oninput = () => {
+          bo.textContent = `${br.value}%`;
+          const entry = flowerMixers.find(e => e.slotIdx === selectedSlot && e.stepIndex === i);
+          if (entry) setFlowerBloom(entry, +br.value / 100);
+          saveState();
+        };
+        body.appendChild(bloomRow);
+      }
+      body.appendChild(ctlRow('Rotation', 0, 355, 5, st.s, deg => `${deg}°`,
+        val => { st.s = val; replaceChain(selectedSlot); saveState(); }).row);
     }
 
     tree.appendChild(row);
@@ -992,7 +1228,7 @@ function renderChainTree() {
   if (steps.length && chainDone(steps) === 'warn') {
     const tip = document.createElement('p');
     tip.className = 'hint';
-    tip.textContent = '這條還沒完成:莖的頭部還空著。';
+    tip.textContent = 'Chain incomplete: the stem head is still open.';
     tree.appendChild(tip);
   }
 }
@@ -1023,25 +1259,141 @@ function removeStepFrom(i) {
 $('#btnRotate').onclick = () => {
   controls.autoRotate = !controls.autoRotate;
   $('#btnRotate').setAttribute('aria-pressed', controls.autoRotate);
+  if (controls.autoRotate) {
+    // 繞組裝本體的中心軸旋轉,外圈(地面圓)不會晃
+    const box = new THREE.Box3().setFromObject(assembly);
+    if (box.isEmpty()) return;
+    const c = box.getCenter(new THREE.Vector3());
+    camGoal.target.set(c.x, controls.target.y, c.z);
+    camGoal.frames = 110;
+  } else {
+    frameAssembly(); // 關閉時恢復原本構圖
+  }
 };
 
-const btnShot = $('#btnShot');
-btnShot.onclick = () => {
+/* ---------------- 截圖 / GIF ---------------- */
+/* 以組裝本體的外接框投影到螢幕,加邊距後回傳裁切區 */
+function computeCrop() {
   renderer.render(scene, camera);
-  canvas.toBlob(blob => {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'mechanical-floral.png';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    toast('已下載圖片。');
+  const box = new THREE.Box3().setFromObject(assembly);
+  const v = new THREE.Vector3();
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (let i = 0; i < 8; i++) {
+    v.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(camera);
+    const px = (v.x * 0.5 + 0.5) * canvas.width;
+    const py = (-v.y * 0.5 + 0.5) * canvas.height;
+    if (px < minX) minX = px;
+    if (px > maxX) maxX = px;
+    if (py < minY) minY = py;
+    if (py > maxY) maxY = py;
+  }
+  const pad = Math.max(16, Math.min(maxX - minX, maxY - minY) * 0.05);
+  minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+  maxX = Math.min(canvas.width, maxX + pad); maxY = Math.min(canvas.height, maxY + pad);
+  return {
+    sx: Math.round(minX), sy: Math.round(minY),
+    cw: Math.max(1, Math.round(maxX - minX)), ch: Math.max(1, Math.round(maxY - minY)),
+  };
+}
+
+function downloadBlob(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* 匯出時提高解析度:只放大 WebGL 繪製緩衝,#stage 的 CSS 尺寸不變,畫面外觀不受影響 */
+async function withExportResolution(fn) {
+  const pr = renderer.getPixelRatio();
+  renderer.setPixelRatio(pr * 2); // 匯出解析度 = 螢幕的 2 倍
+  renderer.setSize(innerWidth, innerHeight, false);
+  try { return await fn(); } finally {
+    renderer.setPixelRatio(pr);
+    renderer.setSize(innerWidth, innerHeight, false);
+  }
+}
+
+function shootPng() {
+  withExportResolution(() => {
+    const { sx, sy, cw, ch } = computeCrop();
+    const c2 = document.createElement('canvas');
+    c2.width = cw; c2.height = ch;
+    c2.getContext('2d').drawImage(canvas, sx, sy, cw, ch, 0, 0, cw, ch);
+    c2.toBlob(blob => {
+      downloadBlob(blob, 'mechanical-floral.png');
+      toast(`PNG downloaded (${cw}×${ch}).`);
+    });
   });
-};
+}
+
+/* 360° 迴轉 GIF:鏡頭繞組裝中心軸旋轉一圈,花保持當下狀態 */
+async function shootGifOn(progress) {
+  progress.textContent = 'Capturing frames…';
+  const wasAuto = controls.autoRotate;
+  controls.autoRotate = false;
+  const box = new THREE.Box3().setFromObject(assembly);
+  const c = box.getCenter(new THREE.Vector3());
+  const camStart = camera.position.clone();
+  const tgtStart = controls.target.clone();
+  const look = new THREE.Vector3(c.x, tgtStart.y, c.z);
+  const a0 = Math.atan2(camStart.z - c.z, camStart.x - c.x);
+  const radius = Math.hypot(camStart.x - c.x, camStart.z - c.z);
+  const frames = 80, fps = 8; // 80 幀 × 125ms = 10s 一圈
+  const pose = angle => {
+    camera.position.set(
+      c.x + radius * Math.cos(a0 + angle), camStart.y, c.z + radius * Math.sin(a0 + angle)
+    );
+    camera.lookAt(look);
+  };
+
+  let crop;
+  await withExportResolution(async () => {
+    pose(0);
+    crop = computeCrop(); // 在第 0 幀視角量裁切區
+    const { sx, sy, cw, ch } = crop;
+    const c2 = document.createElement('canvas');
+    c2.width = cw; c2.height = ch;
+    const ctx = c2.getContext('2d');
+    const gif = new GIF({ workers: 2, quality: 8, width: cw, height: ch, workerScript: 'gif.worker.js' });
+    for (let i = 0; i < frames; i++) {
+      pose((i / frames) * Math.PI * 2);
+      renderer.render(scene, camera);
+      ctx.drawImage(canvas, sx, sy, cw, ch, 0, 0, cw, ch);
+      gif.addFrame(ctx, { copy: true, delay: Math.round(1000 / fps) });
+      if (i % 6 === 0) {
+        progress.textContent = `Capturing ${i + 1}/${frames}…`;
+        await new Promise(r => setTimeout(r, 0));
+      }
+    }
+    camera.position.copy(camStart);
+    controls.target.copy(tgtStart);
+    controls.update();
+    if (wasAuto) controls.autoRotate = true;
+    progress.textContent = 'Encoding GIF…';
+    await new Promise(resolve => {
+      gif.on('finished', blob => {
+        downloadBlob(blob, 'mechanical-floral.gif');
+        resolve();
+      });
+      gif.render();
+    });
+  });
+  progress.textContent = 'GIF downloaded.';
+}
+
+const btnShot = $('#btnShot');
+btnShot.onclick = () => { $('#shootModal').hidden = false; };
+$('#btnShotClose').onclick = () => { $('#shootModal').hidden = true; };
+$('#shootModal').addEventListener('click', ev => { if (ev.target.id === 'shootModal') $('#shootModal').hidden = true; });
+$('#btnShotPng').onclick = () => shootPng();
+$('#btnShotGif').onclick = () => shootGifOn($('#shootProgress'));
 
 $('#btnShare').onclick = () => {
   state.pot && saveState();
   history.replaceState(null, '', '#' + encodeState({ pot: state.pot, slots: state.slots }));
-  navigator.clipboard?.writeText(location.href).then(() => toast('分享連結已複製。'), () => toast('已更新網址,直接複製即可。'));
+  navigator.clipboard?.writeText(location.href).then(() => toast('Share link copied.'), () => toast('URL updated — copy it from the address bar.'));
 };
 
 $('#btnRule').onclick = () => { $('#ruleModal').hidden = false; };
@@ -1053,25 +1405,56 @@ $('#btnRings').onclick = () => {
 };
 $('#btnRuleClose').onclick = () => { $('#ruleModal').hidden = true; };
 $('#ruleModal').addEventListener('click', ev => { if (ev.target.id === 'ruleModal') $('#ruleModal').hidden = true; });
-addEventListener('keydown', ev => { if (ev.key === 'Escape') $('#ruleModal').hidden = true; });
 
-/* 花朵開闔:播放(右上角=全部,組裝列內=單朵)+ 時間軸 */
-$('#btnBloomPlay').onclick = () => {
-  if (flowerMixers.length === 0) { toast('還沒有組好任何動畫花。'); return; }
-  const start = !anyBloomPlaying();
-  flowerMixers.forEach(e => { e.playing = start; e.t = 0; });
-  updatePlayUI();
-  if (!start) saveState();
-};
+/* Used-parts modal: aggregate pieces across all chains */
+function renderPartsList() {
+  const list = $('#partsList');
+  list.innerHTML = '';
+  const counts = new Map();
+  (state.slots || []).forEach(steps => {
+    if (!Array.isArray(steps)) return;
+    steps.forEach(st => { if (st?.v) counts.set(st.v, (counts.get(st.v) || 0) + 1); });
+  });
+  const KIND_ORDER = { pot: 0, stem: 1, conn: 2, end: 3 };
+  const used = CATALOG.filter(p => (p.kind === 'pot' && p.id === state.pot) || counts.has(p.id));
+  used.sort((a, b) => (KIND_ORDER[a.kind] - KIND_ORDER[b.kind]) || pieceDisplayName(a).localeCompare(pieceDisplayName(b)));
+  used.forEach(p => {
+    const n = p.kind === 'pot' ? 1 : counts.get(p.id);
+    const row = document.createElement('div');
+    row.className = 'parts-row';
+    const img = document.createElement('img');
+    img.className = 'thumb';
+    img.src = piecePreviews[p.id] || '';
+    img.alt = pieceDisplayName(p);
+    const name = document.createElement('span');
+    name.className = 'pname';
+    name.textContent = pieceDisplayName(p);
+    const count = document.createElement('span');
+    count.className = 'pcount';
+    count.textContent = `× ${n}`;
+    row.append(img, name, count);
+    list.appendChild(row);
+  });
+  if (!used.length) {
+    const p = document.createElement('p');
+    p.className = 'hint';
+    p.textContent = 'Nothing assembled yet.';
+    list.appendChild(p);
+  }
+}
+$('#btnParts').onclick = () => { renderPartsList(); $('#partsModal').hidden = false; };
+$('#btnPartsClose').onclick = () => { $('#partsModal').hidden = true; };
+$('#partsModal').addEventListener('click', ev => { if (ev.target.id === 'partsModal') $('#partsModal').hidden = true; });
+addEventListener('keydown', ev => {
+  if (ev.key === 'Escape') {
+    $('#ruleModal').hidden = true;
+    $('#partsModal').hidden = true;
+    $('#shootModal').hidden = true;
+    closePieceMenu();
+  }
+});
 
-$('#bloomTimeline').oninput = ev => {
-  flowerMixers.forEach(e => { e.playing = false; });
-  updatePlayUI();
-  const b = +ev.target.value / 100;
-  setAllBloom(b);
-  $('#bloomOut').textContent = `${ev.target.value}%`;
-  saveState();
-};
+/* 花朵開闔:組裝列內單朵播放 */
 
 /* 單朵播放按鈕 */
 function toggleFlowerPlay(slotIdx, stepIndex) {
@@ -1088,6 +1471,7 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setSize(innerWidth, innerHeight);
+  positionPanelToggle();
 });
 
 let pulseT = 0;
@@ -1107,7 +1491,6 @@ function loop() {
         setFlowerBloom(e, phase);
       }
     }
-    updateBloomUI();
   }
   if (camGoal.frames > 0) {
     camGoal.frames--;
@@ -1137,16 +1520,22 @@ function loop() {
   await detectModelMode();
   await loadAll((done, total, id) => {
     fill.style.width = `${(done / total) * 100}%`;
-    msg.textContent = `載入零件 ${done}/${total} — ${id}`;
+    msg.textContent = `Loading parts ${done}/${total} — ${id}`;
   });
-  makePotPreviews();
+  makePiecePreviews();
   await initBVH();
   loadState();
+  migrateSlots();
+  /* 還原上次使用的 design 槽 */
+  const ad = parseInt(localStorage.getItem('mechanical-floral-design-active') || '-1', 10);
+  if (ad >= 0 && ad < DESIGN_COUNT) activeDesign = ad;
+  renderDesignRow();
   if (!state.pot) state.pot = 'pot_1';
   if (!Array.isArray(state.slots)) state.slots = [];
   rebuild();
-  renderPotRow();
+  renderPotSelect();
   renderSlotRow();
+  positionPanelToggle();
   loop();
   setTimeout(() => { $('#loading').classList.add('done'); }, 250);
   controls.update();

@@ -1,33 +1,45 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>機械花藝拼裝台 — Mechanical Floral Puzzle</title>
+<title>Mechanical Floral Puzzle — Assembly Bench</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🌸</text></svg>">
 <link rel="stylesheet" href="./fonts/fonts.css">
-<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./styles.css?v=23">
 </head>
 <body>
   <div id="loading">
     <div class="loading-card">
-      <p class="loading-title">機械花藝拼裝台</p>
-      <p class="loading-sub">Mechanical Floral Puzzle</p>
+      <p class="loading-title">Mechanical Floral Puzzle</p>
+      <p class="loading-sub">Assembly Bench</p>
       <div class="loading-bar"><div id="loadingFill"></div></div>
-      <p id="loadingMsg">準備零件…</p>
+      <p id="loadingMsg">Preparing parts…</p>
     </div>
   </div>
 
-  <canvas id="stage" aria-label="3D 拼裝舞台"></canvas>
+  <canvas id="stage" aria-label="3D assembly stage"></canvas>
   <div id="vignette" aria-hidden="true"></div>
 
   <header id="topbar">
-    <div class="brand">
-      <h1>機械花藝拼裝台</h1>
-      <span class="brand-en">Mechanical Floral Puzzle</span>
+    <div class="top-left">
+      <div class="brand">
+        <h1>Mechanical Floral Puzzle</h1>
+        <span class="brand-en">ASSEMBLY BENCH</span>
+      </div>
+      <button id="btnPanel" aria-pressed="true" title="Show / hide control panel" aria-label="Show / hide control panel">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 6l6 6-6 6"/>
+        </svg>
+      </button>
     </div>
     <nav class="top-actions">
-      <button id="btnRings" class="ghost-btn" aria-pressed="false" title="切換插槽光圈顯示" aria-label="切換插槽光圈顯示">
+      <button id="btnParts" class="ghost-btn" title="Used parts list" aria-label="Used parts list">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+      </button>
+      <button id="btnRings" class="ghost-btn" aria-pressed="false" title="Toggle slot rings" aria-label="Toggle slot rings">
         <svg class="ic ic-main" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>
         </svg>
@@ -35,30 +47,22 @@
           <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><line x1="4" y1="20" x2="20" y2="4"/>
         </svg>
       </button>
-      <button id="btnBloomPlay" class="ghost-btn" aria-pressed="false" title="所有花朵同步開→合展示" aria-label="所有花朵同步開→合展示">
-        <svg class="ic ic-main" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
-          <path d="M8 5.5v13l11-6.5z"/>
-        </svg>
-        <svg class="ic ic-alt" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
-          <rect x="7" y="5.5" width="3.4" height="13" rx="1"/><rect x="13.6" y="5.5" width="3.4" height="13" rx="1"/>
-        </svg>
-      </button>
-      <button id="btnRotate" class="ghost-btn" aria-pressed="false" title="自動旋轉展示" aria-label="自動旋轉展示">
+      <button id="btnRotate" class="ghost-btn" aria-pressed="false" title="Auto-rotate view" aria-label="Auto-rotate view">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>
         </svg>
       </button>
-      <button id="btnShot" class="ghost-btn" title="下載目前畫面" aria-label="下載目前畫面">
+      <button id="btnShot" class="ghost-btn" title="Download screenshot" aria-label="Download screenshot">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>
         </svg>
       </button>
-      <button id="btnShare" class="ghost-btn" title="複製分享連結,並自動儲存" aria-label="複製分享連結,並自動儲存">
+      <button id="btnShare" class="ghost-btn" title="Copy share link (auto-saves)" aria-label="Copy share link (auto-saves)">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
         </svg>
       </button>
-      <button id="btnRule" class="ghost-btn" title="連接規則說明" aria-label="連接規則說明">
+      <button id="btnRule" class="ghost-btn" title="Assembly rules" aria-label="Assembly rules">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
@@ -66,34 +70,36 @@
     </nav>
   </header>
 
-  <aside id="panel" aria-label="拼裝控制面板">
-    <section class="sec" id="secPot">
-      <h2>選擇花盆</h2>
-      <div id="potRow" class="chip-row"></div>
+  <aside id="panel" aria-label="Assembly control panel">
+    <section class="sec" id="secDesign" aria-label="Design">
+      <div id="designRow" class="design-row"></div>
     </section>
 
-    <section class="sec" id="secSlots">
-      <h2>插槽</h2>
-      <p class="hint" id="slotHint">按鈕的位置就是花盆插槽的實際位置,點選即開始組裝。</p>
-      <div id="slotRow"></div>
-      <p class="hint" id="collideStatus" hidden></p>
+    <section class="sec" id="secPot" aria-label="Pot">
+      <button id="potBtn" class="pot-select" aria-expanded="false" aria-haspopup="listbox" title="Change pot">
+        <span class="pot-select-info">
+          <span class="name">Choose pot</span>
+          <span class="meta">—</span>
+        </span>
+        <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
     </section>
 
-    <section class="sec" id="secBloom">
-      <h2>開花時間軸(所有花朵)</h2>
-      <div class="bloom-row">
-        <span class="bloom-cap">閉起</span>
-        <input id="bloomTimeline" type="range" min="0" max="100" step="1" value="100" aria-label="開花程度時間軸">
-        <span class="bloom-cap">全開</span>
-      </div>
-      <div class="bloom-row">
-        <output id="bloomOut">100%</output>
-        <span class="bloom-hint">拖動即停止播放,並停在此開花程度。單朵花可在下方組裝列內獨立播放。</span>
+    <section class="sec" id="secSlots" aria-label="Slots">
+      <div id="slotsGroup" class="expander open">
+        <button id="slotsToggle" class="expander-head" aria-expanded="true" aria-controls="slotsBody">
+          <span class="sec-title">Slot</span>
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div id="slotsBody" class="expander-body">
+          <div id="slotRow"></div>
+          <p class="hint" id="collideStatus" hidden></p>
+        </div>
       </div>
     </section>
 
     <section class="sec" id="secBuilder" hidden>
-      <h2 id="builderTitle">組裝</h2>
+      <h2 id="builderTitle">Assemble</h2>
       <div id="chainTree"></div>
       <div id="nextPicker"></div>
     </section>
@@ -103,17 +109,40 @@
     <p id="specimenText"></p>
   </footer>
 
+  <div id="potMenu" role="listbox" aria-label="Choose pot" hidden></div>
+  <div id="pieceMenu" role="listbox" aria-label="Choose piece" hidden></div>
+
   <div id="ruleModal" hidden>
     <div class="rule-card" role="dialog" aria-modal="true" aria-labelledby="ruleTitle">
-      <h2 id="ruleTitle">零件接法</h2>
+      <h2 id="ruleTitle">Assembly Rules</h2>
       <ul class="rule-list">
-        <li><b>花盆</b>上每個插槽可插入一株莖的底部。</li>
-        <li><b>A 類莖</b>:頭部(頂端)只能接<b>花朵 / 蓮葉</b>,就是終點。</li>
-        <li><b>B 類莖</b>:頭部只能接<b>連接器</b>;連接器頂端可再接下一株莖,可以一直延伸。</li>
-        <li>帶葉連接器(鬱金香葉、菊花葉、玫瑰葉)也算連接器,會在接縫處長出葉子。</li>
-        <li>每個零件都可以<b>自轉</b>:讓莖的彎曲方向、葉子朝向隨你安排。</li>
+        <li>Each slot on the <b>pot</b> accepts the base of one stem.</li>
+        <li><b>Type-A stem</b>: the head (top) only accepts a <b>flower or lotus leaf</b> — that is the end of the chain.</li>
+        <li><b>Type-B stem</b>: the head only accepts a <b>connector</b>; a connector can take the next stem on top, so a chain can keep growing.</li>
+        <li>Leaf connectors (Tulip, Mum, Rose) also count as connectors — a leaf grows at the joint.</li>
+        <li>Every piece can <b>spin</b>: angle the stems' curves and the leaves freely.</li>
       </ul>
-      <button id="btnRuleClose" class="solid-btn">了解</button>
+      <button id="btnRuleClose" class="solid-btn">Got it</button>
+    </div>
+  </div>
+
+  <div id="partsModal" hidden>
+    <div class="rule-card" role="dialog" aria-modal="true" aria-labelledby="partsTitle">
+      <h2 id="partsTitle">Used Parts</h2>
+      <div id="partsList" class="parts-list"></div>
+      <button id="btnPartsClose" class="solid-btn">Close</button>
+    </div>
+  </div>
+
+  <div id="shootModal" hidden>
+    <div class="rule-card" role="dialog" aria-modal="true" aria-labelledby="shootTitle">
+      <h2 id="shootTitle">Download</h2>
+      <div class="shoot-choices">
+        <button id="btnShotPng" class="chip">PNG — static image</button>
+        <button id="btnShotGif" class="chip" title="One full 360° turn around the assembly (10s loop)">GIF — 360° turn</button>
+      </div>
+      <p class="hint" id="shootProgress"></p>
+      <button id="btnShotClose" class="solid-btn">Close</button>
     </div>
   </div>
 

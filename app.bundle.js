@@ -1,5 +1,544 @@
 (() => {
-  // Mechanical floral puzzle decor/app-build/node_modules/three/build/three.module.js
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+    get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+  }) : x)(function(x) {
+    if (typeof require !== "undefined") return require.apply(this, arguments);
+    throw Error('Dynamic require of "' + x + '" is not supported');
+  });
+  var __commonJS = (cb, mod) => function __require2() {
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
+
+  // node_modules/gif.js/dist/gif.js
+  var require_gif = __commonJS({
+    "node_modules/gif.js/dist/gif.js"(exports, module) {
+      (function(f) {
+        if (typeof exports === "object" && typeof module !== "undefined") {
+          module.exports = f();
+        } else if (typeof define === "function" && define.amd) {
+          define([], f);
+        } else {
+          var g;
+          if (typeof window !== "undefined") {
+            g = window;
+          } else if (typeof global !== "undefined") {
+            g = global;
+          } else if (typeof self !== "undefined") {
+            g = self;
+          } else {
+            g = this;
+          }
+          g.GIF = f();
+        }
+      })(function() {
+        var define2, module2, exports2;
+        return (function e(t, n, r) {
+          function s(o2, u) {
+            if (!n[o2]) {
+              if (!t[o2]) {
+                var a = typeof __require == "function" && __require;
+                if (!u && a) return a(o2, true);
+                if (i) return i(o2, true);
+                var f = new Error("Cannot find module '" + o2 + "'");
+                throw f.code = "MODULE_NOT_FOUND", f;
+              }
+              var l = n[o2] = { exports: {} };
+              t[o2][0].call(l.exports, function(e2) {
+                var n2 = t[o2][1][e2];
+                return s(n2 ? n2 : e2);
+              }, l, l.exports, e, t, n, r);
+            }
+            return n[o2].exports;
+          }
+          var i = typeof __require == "function" && __require;
+          for (var o = 0; o < r.length; o++) s(r[o]);
+          return s;
+        })({ 1: [function(require2, module3, exports3) {
+          function EventEmitter() {
+            this._events = this._events || {};
+            this._maxListeners = this._maxListeners || void 0;
+          }
+          module3.exports = EventEmitter;
+          EventEmitter.EventEmitter = EventEmitter;
+          EventEmitter.prototype._events = void 0;
+          EventEmitter.prototype._maxListeners = void 0;
+          EventEmitter.defaultMaxListeners = 10;
+          EventEmitter.prototype.setMaxListeners = function(n) {
+            if (!isNumber(n) || n < 0 || isNaN(n)) throw TypeError("n must be a positive number");
+            this._maxListeners = n;
+            return this;
+          };
+          EventEmitter.prototype.emit = function(type) {
+            var er, handler, len, args, i, listeners;
+            if (!this._events) this._events = {};
+            if (type === "error") {
+              if (!this._events.error || isObject(this._events.error) && !this._events.error.length) {
+                er = arguments[1];
+                if (er instanceof Error) {
+                  throw er;
+                } else {
+                  var err = new Error('Uncaught, unspecified "error" event. (' + er + ")");
+                  err.context = er;
+                  throw err;
+                }
+              }
+            }
+            handler = this._events[type];
+            if (isUndefined(handler)) return false;
+            if (isFunction(handler)) {
+              switch (arguments.length) {
+                case 1:
+                  handler.call(this);
+                  break;
+                case 2:
+                  handler.call(this, arguments[1]);
+                  break;
+                case 3:
+                  handler.call(this, arguments[1], arguments[2]);
+                  break;
+                default:
+                  args = Array.prototype.slice.call(arguments, 1);
+                  handler.apply(this, args);
+              }
+            } else if (isObject(handler)) {
+              args = Array.prototype.slice.call(arguments, 1);
+              listeners = handler.slice();
+              len = listeners.length;
+              for (i = 0; i < len; i++) listeners[i].apply(this, args);
+            }
+            return true;
+          };
+          EventEmitter.prototype.addListener = function(type, listener) {
+            var m;
+            if (!isFunction(listener)) throw TypeError("listener must be a function");
+            if (!this._events) this._events = {};
+            if (this._events.newListener) this.emit("newListener", type, isFunction(listener.listener) ? listener.listener : listener);
+            if (!this._events[type]) this._events[type] = listener;
+            else if (isObject(this._events[type])) this._events[type].push(listener);
+            else this._events[type] = [this._events[type], listener];
+            if (isObject(this._events[type]) && !this._events[type].warned) {
+              if (!isUndefined(this._maxListeners)) {
+                m = this._maxListeners;
+              } else {
+                m = EventEmitter.defaultMaxListeners;
+              }
+              if (m && m > 0 && this._events[type].length > m) {
+                this._events[type].warned = true;
+                console.error("(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.", this._events[type].length);
+                if (typeof console.trace === "function") {
+                  console.trace();
+                }
+              }
+            }
+            return this;
+          };
+          EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+          EventEmitter.prototype.once = function(type, listener) {
+            if (!isFunction(listener)) throw TypeError("listener must be a function");
+            var fired = false;
+            function g() {
+              this.removeListener(type, g);
+              if (!fired) {
+                fired = true;
+                listener.apply(this, arguments);
+              }
+            }
+            g.listener = listener;
+            this.on(type, g);
+            return this;
+          };
+          EventEmitter.prototype.removeListener = function(type, listener) {
+            var list, position, length, i;
+            if (!isFunction(listener)) throw TypeError("listener must be a function");
+            if (!this._events || !this._events[type]) return this;
+            list = this._events[type];
+            length = list.length;
+            position = -1;
+            if (list === listener || isFunction(list.listener) && list.listener === listener) {
+              delete this._events[type];
+              if (this._events.removeListener) this.emit("removeListener", type, listener);
+            } else if (isObject(list)) {
+              for (i = length; i-- > 0; ) {
+                if (list[i] === listener || list[i].listener && list[i].listener === listener) {
+                  position = i;
+                  break;
+                }
+              }
+              if (position < 0) return this;
+              if (list.length === 1) {
+                list.length = 0;
+                delete this._events[type];
+              } else {
+                list.splice(position, 1);
+              }
+              if (this._events.removeListener) this.emit("removeListener", type, listener);
+            }
+            return this;
+          };
+          EventEmitter.prototype.removeAllListeners = function(type) {
+            var key, listeners;
+            if (!this._events) return this;
+            if (!this._events.removeListener) {
+              if (arguments.length === 0) this._events = {};
+              else if (this._events[type]) delete this._events[type];
+              return this;
+            }
+            if (arguments.length === 0) {
+              for (key in this._events) {
+                if (key === "removeListener") continue;
+                this.removeAllListeners(key);
+              }
+              this.removeAllListeners("removeListener");
+              this._events = {};
+              return this;
+            }
+            listeners = this._events[type];
+            if (isFunction(listeners)) {
+              this.removeListener(type, listeners);
+            } else if (listeners) {
+              while (listeners.length) this.removeListener(type, listeners[listeners.length - 1]);
+            }
+            delete this._events[type];
+            return this;
+          };
+          EventEmitter.prototype.listeners = function(type) {
+            var ret;
+            if (!this._events || !this._events[type]) ret = [];
+            else if (isFunction(this._events[type])) ret = [this._events[type]];
+            else ret = this._events[type].slice();
+            return ret;
+          };
+          EventEmitter.prototype.listenerCount = function(type) {
+            if (this._events) {
+              var evlistener = this._events[type];
+              if (isFunction(evlistener)) return 1;
+              else if (evlistener) return evlistener.length;
+            }
+            return 0;
+          };
+          EventEmitter.listenerCount = function(emitter, type) {
+            return emitter.listenerCount(type);
+          };
+          function isFunction(arg) {
+            return typeof arg === "function";
+          }
+          function isNumber(arg) {
+            return typeof arg === "number";
+          }
+          function isObject(arg) {
+            return typeof arg === "object" && arg !== null;
+          }
+          function isUndefined(arg) {
+            return arg === void 0;
+          }
+        }, {}], 2: [function(require2, module3, exports3) {
+          var UA, browser, mode, platform, ua;
+          ua = navigator.userAgent.toLowerCase();
+          platform = navigator.platform.toLowerCase();
+          UA = ua.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/) || [null, "unknown", 0];
+          mode = UA[1] === "ie" && document.documentMode;
+          browser = { name: UA[1] === "version" ? UA[3] : UA[1], version: mode || parseFloat(UA[1] === "opera" && UA[4] ? UA[4] : UA[2]), platform: { name: ua.match(/ip(?:ad|od|hone)/) ? "ios" : (ua.match(/(?:webos|android)/) || platform.match(/mac|win|linux/) || ["other"])[0] } };
+          browser[browser.name] = true;
+          browser[browser.name + parseInt(browser.version, 10)] = true;
+          browser.platform[browser.platform.name] = true;
+          module3.exports = browser;
+        }, {}], 3: [function(require2, module3, exports3) {
+          var EventEmitter, GIF2, browser, extend = function(child, parent) {
+            for (var key in parent) {
+              if (hasProp.call(parent, key)) child[key] = parent[key];
+            }
+            function ctor() {
+              this.constructor = child;
+            }
+            ctor.prototype = parent.prototype;
+            child.prototype = new ctor();
+            child.__super__ = parent.prototype;
+            return child;
+          }, hasProp = {}.hasOwnProperty, indexOf = [].indexOf || function(item) {
+            for (var i = 0, l = this.length; i < l; i++) {
+              if (i in this && this[i] === item) return i;
+            }
+            return -1;
+          }, slice = [].slice;
+          EventEmitter = require2("events").EventEmitter;
+          browser = require2("./browser.coffee");
+          GIF2 = (function(superClass) {
+            var defaults, frameDefaults;
+            extend(GIF3, superClass);
+            defaults = { workerScript: "gif.worker.js", workers: 2, repeat: 0, background: "#fff", quality: 10, width: null, height: null, transparent: null, debug: false, dither: false };
+            frameDefaults = { delay: 500, copy: false };
+            function GIF3(options) {
+              var base, key, value;
+              this.running = false;
+              this.options = {};
+              this.frames = [];
+              this.freeWorkers = [];
+              this.activeWorkers = [];
+              this.setOptions(options);
+              for (key in defaults) {
+                value = defaults[key];
+                if ((base = this.options)[key] == null) {
+                  base[key] = value;
+                }
+              }
+            }
+            GIF3.prototype.setOption = function(key, value) {
+              this.options[key] = value;
+              if (this._canvas != null && (key === "width" || key === "height")) {
+                return this._canvas[key] = value;
+              }
+            };
+            GIF3.prototype.setOptions = function(options) {
+              var key, results, value;
+              results = [];
+              for (key in options) {
+                if (!hasProp.call(options, key)) continue;
+                value = options[key];
+                results.push(this.setOption(key, value));
+              }
+              return results;
+            };
+            GIF3.prototype.addFrame = function(image, options) {
+              var frame, key;
+              if (options == null) {
+                options = {};
+              }
+              frame = {};
+              frame.transparent = this.options.transparent;
+              for (key in frameDefaults) {
+                frame[key] = options[key] || frameDefaults[key];
+              }
+              if (this.options.width == null) {
+                this.setOption("width", image.width);
+              }
+              if (this.options.height == null) {
+                this.setOption("height", image.height);
+              }
+              if (typeof ImageData !== "undefined" && ImageData !== null && image instanceof ImageData) {
+                frame.data = image.data;
+              } else if (typeof CanvasRenderingContext2D !== "undefined" && CanvasRenderingContext2D !== null && image instanceof CanvasRenderingContext2D || typeof WebGLRenderingContext !== "undefined" && WebGLRenderingContext !== null && image instanceof WebGLRenderingContext) {
+                if (options.copy) {
+                  frame.data = this.getContextData(image);
+                } else {
+                  frame.context = image;
+                }
+              } else if (image.childNodes != null) {
+                if (options.copy) {
+                  frame.data = this.getImageData(image);
+                } else {
+                  frame.image = image;
+                }
+              } else {
+                throw new Error("Invalid image");
+              }
+              return this.frames.push(frame);
+            };
+            GIF3.prototype.render = function() {
+              var i, j, numWorkers, ref;
+              if (this.running) {
+                throw new Error("Already running");
+              }
+              if (this.options.width == null || this.options.height == null) {
+                throw new Error("Width and height must be set prior to rendering");
+              }
+              this.running = true;
+              this.nextFrame = 0;
+              this.finishedFrames = 0;
+              this.imageParts = function() {
+                var j2, ref2, results;
+                results = [];
+                for (i = j2 = 0, ref2 = this.frames.length; 0 <= ref2 ? j2 < ref2 : j2 > ref2; i = 0 <= ref2 ? ++j2 : --j2) {
+                  results.push(null);
+                }
+                return results;
+              }.call(this);
+              numWorkers = this.spawnWorkers();
+              if (this.options.globalPalette === true) {
+                this.renderNextFrame();
+              } else {
+                for (i = j = 0, ref = numWorkers; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+                  this.renderNextFrame();
+                }
+              }
+              this.emit("start");
+              return this.emit("progress", 0);
+            };
+            GIF3.prototype.abort = function() {
+              var worker;
+              while (true) {
+                worker = this.activeWorkers.shift();
+                if (worker == null) {
+                  break;
+                }
+                this.log("killing active worker");
+                worker.terminate();
+              }
+              this.running = false;
+              return this.emit("abort");
+            };
+            GIF3.prototype.spawnWorkers = function() {
+              var j, numWorkers, ref, results;
+              numWorkers = Math.min(this.options.workers, this.frames.length);
+              (function() {
+                results = [];
+                for (var j2 = ref = this.freeWorkers.length; ref <= numWorkers ? j2 < numWorkers : j2 > numWorkers; ref <= numWorkers ? j2++ : j2--) {
+                  results.push(j2);
+                }
+                return results;
+              }).apply(this).forEach(/* @__PURE__ */ (function(_this) {
+                return function(i) {
+                  var worker;
+                  _this.log("spawning worker " + i);
+                  worker = new Worker(_this.options.workerScript);
+                  worker.onmessage = function(event) {
+                    _this.activeWorkers.splice(_this.activeWorkers.indexOf(worker), 1);
+                    _this.freeWorkers.push(worker);
+                    return _this.frameFinished(event.data);
+                  };
+                  return _this.freeWorkers.push(worker);
+                };
+              })(this));
+              return numWorkers;
+            };
+            GIF3.prototype.frameFinished = function(frame) {
+              var i, j, ref;
+              this.log("frame " + frame.index + " finished - " + this.activeWorkers.length + " active");
+              this.finishedFrames++;
+              this.emit("progress", this.finishedFrames / this.frames.length);
+              this.imageParts[frame.index] = frame;
+              if (this.options.globalPalette === true) {
+                this.options.globalPalette = frame.globalPalette;
+                this.log("global palette analyzed");
+                if (this.frames.length > 2) {
+                  for (i = j = 1, ref = this.freeWorkers.length; 1 <= ref ? j < ref : j > ref; i = 1 <= ref ? ++j : --j) {
+                    this.renderNextFrame();
+                  }
+                }
+              }
+              if (indexOf.call(this.imageParts, null) >= 0) {
+                return this.renderNextFrame();
+              } else {
+                return this.finishRendering();
+              }
+            };
+            GIF3.prototype.finishRendering = function() {
+              var data, frame, i, image, j, k, l, len, len1, len2, len3, offset, page, ref, ref1, ref2;
+              len = 0;
+              ref = this.imageParts;
+              for (j = 0, len1 = ref.length; j < len1; j++) {
+                frame = ref[j];
+                len += (frame.data.length - 1) * frame.pageSize + frame.cursor;
+              }
+              len += frame.pageSize - frame.cursor;
+              this.log("rendering finished - filesize " + Math.round(len / 1e3) + "kb");
+              data = new Uint8Array(len);
+              offset = 0;
+              ref1 = this.imageParts;
+              for (k = 0, len2 = ref1.length; k < len2; k++) {
+                frame = ref1[k];
+                ref2 = frame.data;
+                for (i = l = 0, len3 = ref2.length; l < len3; i = ++l) {
+                  page = ref2[i];
+                  data.set(page, offset);
+                  if (i === frame.data.length - 1) {
+                    offset += frame.cursor;
+                  } else {
+                    offset += frame.pageSize;
+                  }
+                }
+              }
+              image = new Blob([data], { type: "image/gif" });
+              return this.emit("finished", image, data);
+            };
+            GIF3.prototype.renderNextFrame = function() {
+              var frame, task, worker;
+              if (this.freeWorkers.length === 0) {
+                throw new Error("No free workers");
+              }
+              if (this.nextFrame >= this.frames.length) {
+                return;
+              }
+              frame = this.frames[this.nextFrame++];
+              worker = this.freeWorkers.shift();
+              task = this.getTask(frame);
+              this.log("starting frame " + (task.index + 1) + " of " + this.frames.length);
+              this.activeWorkers.push(worker);
+              return worker.postMessage(task);
+            };
+            GIF3.prototype.getContextData = function(ctx) {
+              return ctx.getImageData(0, 0, this.options.width, this.options.height).data;
+            };
+            GIF3.prototype.getImageData = function(image) {
+              var ctx;
+              if (this._canvas == null) {
+                this._canvas = document.createElement("canvas");
+                this._canvas.width = this.options.width;
+                this._canvas.height = this.options.height;
+              }
+              ctx = this._canvas.getContext("2d");
+              ctx.setFill = this.options.background;
+              ctx.fillRect(0, 0, this.options.width, this.options.height);
+              ctx.drawImage(image, 0, 0);
+              return this.getContextData(ctx);
+            };
+            GIF3.prototype.getTask = function(frame) {
+              var index, task;
+              index = this.frames.indexOf(frame);
+              task = { index, last: index === this.frames.length - 1, delay: frame.delay, transparent: frame.transparent, width: this.options.width, height: this.options.height, quality: this.options.quality, dither: this.options.dither, globalPalette: this.options.globalPalette, repeat: this.options.repeat, canTransfer: browser.name === "chrome" };
+              if (frame.data != null) {
+                task.data = frame.data;
+              } else if (frame.context != null) {
+                task.data = this.getContextData(frame.context);
+              } else if (frame.image != null) {
+                task.data = this.getImageData(frame.image);
+              } else {
+                throw new Error("Invalid frame");
+              }
+              return task;
+            };
+            GIF3.prototype.log = function() {
+              var args;
+              args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+              if (!this.options.debug) {
+                return;
+              }
+              return console.log.apply(console, args);
+            };
+            return GIF3;
+          })(EventEmitter);
+          module3.exports = GIF2;
+        }, { "./browser.coffee": 2, events: 1 }] }, {}, [3])(3);
+      });
+    }
+  });
+
+  // node_modules/three/build/three.module.js
   var REVISION = "170";
   var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2 };
   var TOUCH = { ROTATE: 0, PAN: 1, DOLLY_PAN: 2, DOLLY_ROTATE: 3 };
@@ -23562,7 +24101,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three/examples/jsm/controls/OrbitControls.js
+  // node_modules/three/examples/jsm/controls/OrbitControls.js
   var _changeEvent = { type: "change" };
   var _startEvent = { type: "start" };
   var _endEvent = { type: "end" };
@@ -24348,7 +24887,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three/examples/jsm/utils/BufferGeometryUtils.js
+  // node_modules/three/examples/jsm/utils/BufferGeometryUtils.js
   function toTrianglesDrawMode(geometry, drawMode) {
     if (drawMode === TrianglesDrawMode) {
       console.warn("THREE.BufferGeometryUtils.toTrianglesDrawMode(): Geometry already defined as triangles.");
@@ -24404,7 +24943,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three/examples/jsm/loaders/GLTFLoader.js
+  // node_modules/three/examples/jsm/loaders/GLTFLoader.js
   var GLTFLoader = class extends Loader {
     constructor(manager) {
       super(manager);
@@ -26888,7 +27427,7 @@ void main() {
     });
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three/examples/jsm/environments/RoomEnvironment.js
+  // node_modules/three/examples/jsm/environments/RoomEnvironment.js
   var RoomEnvironment = class extends Scene {
     constructor() {
       super();
@@ -26977,7 +27516,7 @@ void main() {
     return material;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/Constants.js
+  // node_modules/three-mesh-bvh/src/core/Constants.js
   var CENTER = 0;
   var AVERAGE = 1;
   var SAH = 2;
@@ -26989,7 +27528,7 @@ void main() {
   var FLOAT32_EPSILON = Math.pow(2, -24);
   var SKIP_GENERATION = /* @__PURE__ */ Symbol("SKIP_GENERATION");
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/geometryUtils.js
+  // node_modules/three-mesh-bvh/src/core/build/geometryUtils.js
   function getVertexCount(geo) {
     return geo.index ? geo.index.count : geo.attributes.position.count;
   }
@@ -27062,7 +27601,7 @@ void main() {
     return vertexCount !== total;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/computeBoundsUtils.js
+  // node_modules/three-mesh-bvh/src/core/build/computeBoundsUtils.js
   function getBounds(triangleBounds, offset, count, target, centroidTarget) {
     let minx = Infinity;
     let miny = Infinity;
@@ -27179,7 +27718,7 @@ void main() {
     return triangleBounds;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/ArrayBoxUtilities.js
+  // node_modules/three-mesh-bvh/src/utils/ArrayBoxUtilities.js
   function arrayToBox(nodeIndex32, array, target) {
     target.min.x = array[nodeIndex32];
     target.min.y = array[nodeIndex32 + 1];
@@ -27237,7 +27776,7 @@ void main() {
     return 2 * (d0 * d1 + d1 * d2 + d2 * d0);
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/splitUtils.js
+  // node_modules/three-mesh-bvh/src/core/build/splitUtils.js
   var BIN_COUNT = 32;
   var binsSort = (a, b) => a.candidate - b.candidate;
   var sahBins = new Array(BIN_COUNT).fill().map(() => {
@@ -27411,14 +27950,14 @@ void main() {
     return avg / count;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/MeshBVHNode.js
+  // node_modules/three-mesh-bvh/src/core/MeshBVHNode.js
   var MeshBVHNode = class {
     constructor() {
       this.boundingData = new Float32Array(6);
     }
   };
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/sortUtils.generated.js
+  // node_modules/three-mesh-bvh/src/core/build/sortUtils.generated.js
   function partition(indirectBuffer, index, triangleBounds, offset, count, split) {
     let left = offset;
     let right = offset + count - 1;
@@ -27450,7 +27989,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/sortUtils_indirect.generated.js
+  // node_modules/three-mesh-bvh/src/core/build/sortUtils_indirect.generated.js
   function partition_indirect(indirectBuffer, index, triangleBounds, offset, count, split) {
     let left = offset;
     let right = offset + count - 1;
@@ -27480,7 +28019,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/nodeBufferUtils.js
+  // node_modules/three-mesh-bvh/src/core/utils/nodeBufferUtils.js
   function IS_LEAF(n16, uint16Array2) {
     return uint16Array2[n16 + 15] === 65535;
   }
@@ -27503,7 +28042,7 @@ void main() {
     return n32;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/buildUtils.js
+  // node_modules/three-mesh-bvh/src/core/build/buildUtils.js
   var float32Array;
   var uint32Array;
   var uint16Array;
@@ -27566,7 +28105,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/build/buildTree.js
+  // node_modules/three-mesh-bvh/src/core/build/buildTree.js
   function generateIndirectBuffer(geometry, useSharedArrayBuffer) {
     const triCount = (geometry.index ? geometry.index.count : geometry.attributes.position.count) / 3;
     const useUint32 = triCount > 2 ** 16;
@@ -27672,7 +28211,7 @@ void main() {
     });
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/math/SeparatingAxisBounds.js
+  // node_modules/three-mesh-bvh/src/math/SeparatingAxisBounds.js
   var SeparatingAxisBounds = class {
     constructor() {
       this.min = Infinity;
@@ -27753,7 +28292,7 @@ void main() {
     };
   })();
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/math/MathUtilities.js
+  // node_modules/three-mesh-bvh/src/math/MathUtilities.js
   var closestPointLineToLine = (function() {
     const dir1 = new Vector3();
     const dir2 = new Vector3();
@@ -27871,7 +28410,7 @@ void main() {
     };
   })();
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/math/ExtendedTriangle.js
+  // node_modules/three-mesh-bvh/src/math/ExtendedTriangle.js
   var ZERO_EPSILON = 1e-15;
   function isNearZero(value) {
     return Math.abs(value) < ZERO_EPSILON;
@@ -28184,7 +28723,7 @@ void main() {
     };
   })();
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/math/OrientedBox.js
+  // node_modules/three-mesh-bvh/src/math/OrientedBox.js
   var OrientedBox = class {
     constructor(min, max, matrix) {
       this.isOrientedBox = true;
@@ -28445,7 +28984,7 @@ void main() {
     };
   })();
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/PrimitivePool.js
+  // node_modules/three-mesh-bvh/src/utils/PrimitivePool.js
   var PrimitivePool = class {
     constructor(getNewPrimitive) {
       this._getNewPrimitive = getNewPrimitive;
@@ -28464,7 +29003,7 @@ void main() {
     }
   };
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/ExtendedTrianglePool.js
+  // node_modules/three-mesh-bvh/src/utils/ExtendedTrianglePool.js
   var ExtendedTrianglePoolBase = class extends PrimitivePool {
     constructor() {
       super(() => new ExtendedTriangle());
@@ -28472,7 +29011,7 @@ void main() {
   };
   var ExtendedTrianglePool = /* @__PURE__ */ new ExtendedTrianglePoolBase();
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/BufferStack.js
+  // node_modules/three-mesh-bvh/src/core/utils/BufferStack.js
   var _BufferStack = class {
     constructor() {
       this.float32Array = null;
@@ -28502,7 +29041,7 @@ void main() {
   };
   var BufferStack = new _BufferStack();
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/shapecast.js
+  // node_modules/three-mesh-bvh/src/core/cast/shapecast.js
   var _box1;
   var _box2;
   var boxStack = [];
@@ -28624,7 +29163,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/closestPointToPoint.js
+  // node_modules/three-mesh-bvh/src/core/cast/closestPointToPoint.js
   var temp = /* @__PURE__ */ new Vector3();
   var temp1 = /* @__PURE__ */ new Vector3();
   function closestPointToPoint(bvh, point, target = {}, minThreshold = 0, maxThreshold = Infinity) {
@@ -28665,7 +29204,7 @@ void main() {
     return target;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/ThreeRayIntersectUtilities.js
+  // node_modules/three-mesh-bvh/src/utils/ThreeRayIntersectUtilities.js
   var _vA = /* @__PURE__ */ new Vector3();
   var _vB = /* @__PURE__ */ new Vector3();
   var _vC = /* @__PURE__ */ new Vector3();
@@ -28752,7 +29291,7 @@ void main() {
     return null;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/TriangleUtilities.js
+  // node_modules/three-mesh-bvh/src/utils/TriangleUtilities.js
   function setTriangle(tri, i, index, pos) {
     const ta = tri.a;
     const tb = tri.b;
@@ -28776,7 +29315,7 @@ void main() {
     tc.z = pos.getZ(i2);
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/iterationUtils.generated.js
+  // node_modules/three-mesh-bvh/src/core/utils/iterationUtils.generated.js
   function intersectTris(bvh, side, ray2, offset, count, intersections, near, far) {
     const { geometry, _indirectBuffer } = bvh;
     for (let i = offset, end = offset + count; i < end; i++) {
@@ -28813,7 +29352,7 @@ void main() {
     return false;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/refit.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/refit.generated.js
   function refit(bvh, nodeIndices = null) {
     if (nodeIndices && Array.isArray(nodeIndices)) {
       nodeIndices = new Set(nodeIndices);
@@ -28913,7 +29452,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/intersectUtils.js
+  // node_modules/three-mesh-bvh/src/core/utils/intersectUtils.js
   function intersectRay(nodeIndex32, array, ray2, near, far) {
     let tmin, tmax, tymin, tymax, tzmin, tzmax;
     const invdirx = 1 / ray2.direction.x, invdiry = 1 / ray2.direction.y, invdirz = 1 / ray2.direction.z;
@@ -28956,7 +29495,7 @@ void main() {
     return tmin <= far && tmax >= near;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/utils/iterationUtils_indirect.generated.js
+  // node_modules/three-mesh-bvh/src/core/utils/iterationUtils_indirect.generated.js
   function intersectTris_indirect(bvh, side, ray2, offset, count, intersections, near, far) {
     const { geometry, _indirectBuffer } = bvh;
     for (let i = offset, end = offset + count; i < end; i++) {
@@ -28994,7 +29533,7 @@ void main() {
     return false;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/raycast.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/raycast.generated.js
   function raycast(bvh, root, side, ray2, intersects, near, far) {
     BufferStack.setBuffer(bvh._roots[root]);
     _raycast(0, bvh, side, ray2, intersects, near, far);
@@ -29020,7 +29559,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/raycastFirst.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/raycastFirst.generated.js
   var _xyzFields = ["x", "y", "z"];
   function raycastFirst(bvh, root, side, ray2, near, far) {
     BufferStack.setBuffer(bvh._roots[root]);
@@ -29071,7 +29610,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/intersectsGeometry.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/intersectsGeometry.generated.js
   var boundingBox = /* @__PURE__ */ new Box3();
   var triangle = /* @__PURE__ */ new ExtendedTriangle();
   var triangle2 = /* @__PURE__ */ new ExtendedTriangle();
@@ -29155,7 +29694,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/closestPointToGeometry.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/closestPointToGeometry.generated.js
   var tempMatrix = /* @__PURE__ */ new Matrix4();
   var obb3 = /* @__PURE__ */ new OrientedBox();
   var obb22 = /* @__PURE__ */ new OrientedBox();
@@ -29294,7 +29833,7 @@ void main() {
     return target1;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/refit_indirect.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/refit_indirect.generated.js
   function refit_indirect(bvh, nodeIndices = null) {
     if (nodeIndices && Array.isArray(nodeIndices)) {
       nodeIndices = new Set(nodeIndices);
@@ -29398,7 +29937,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/raycast_indirect.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/raycast_indirect.generated.js
   function raycast_indirect(bvh, root, side, ray2, intersects, near, far) {
     BufferStack.setBuffer(bvh._roots[root]);
     _raycast2(0, bvh, side, ray2, intersects, near, far);
@@ -29424,7 +29963,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/raycastFirst_indirect.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/raycastFirst_indirect.generated.js
   var _xyzFields2 = ["x", "y", "z"];
   function raycastFirst_indirect(bvh, root, side, ray2, near, far) {
     BufferStack.setBuffer(bvh._roots[root]);
@@ -29475,7 +30014,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/intersectsGeometry_indirect.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/intersectsGeometry_indirect.generated.js
   var boundingBox2 = /* @__PURE__ */ new Box3();
   var triangle3 = /* @__PURE__ */ new ExtendedTriangle();
   var triangle22 = /* @__PURE__ */ new ExtendedTriangle();
@@ -29560,7 +30099,7 @@ void main() {
     }
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/closestPointToGeometry_indirect.generated.js
+  // node_modules/three-mesh-bvh/src/core/cast/closestPointToGeometry_indirect.generated.js
   var tempMatrix2 = /* @__PURE__ */ new Matrix4();
   var obb5 = /* @__PURE__ */ new OrientedBox();
   var obb24 = /* @__PURE__ */ new OrientedBox();
@@ -29702,12 +30241,12 @@ void main() {
     return target1;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/BufferUtils.js
+  // node_modules/three-mesh-bvh/src/utils/BufferUtils.js
   function isSharedArrayBufferSupported() {
     return typeof SharedArrayBuffer !== "undefined";
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/cast/bvhcast.js
+  // node_modules/three-mesh-bvh/src/core/cast/bvhcast.js
   var _bufferStack1 = new BufferStack.constructor();
   var _bufferStack2 = new BufferStack.constructor();
   var _boxPool = new PrimitivePool(() => new Box3());
@@ -29978,7 +30517,7 @@ void main() {
     return result;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/core/MeshBVH.js
+  // node_modules/three-mesh-bvh/src/core/MeshBVH.js
   var obb6 = /* @__PURE__ */ new OrientedBox();
   var tempBox = /* @__PURE__ */ new Box3();
   var DEFAULT_OPTIONS = {
@@ -30301,7 +30840,7 @@ void main() {
     }
   };
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/GeometryRayIntersectUtilities.js
+  // node_modules/three-mesh-bvh/src/utils/GeometryRayIntersectUtilities.js
   function convertRaycastIntersect(hit, object, raycaster2) {
     if (hit === null) {
       return null;
@@ -30312,14 +30851,13 @@ void main() {
     return hit;
   }
 
-  // Mechanical floral puzzle decor/app-build/node_modules/three-mesh-bvh/src/utils/ExtensionUtilities.js
-  var BatchedMesh2 = BatchedMesh || null;
+  // node_modules/three-mesh-bvh/src/utils/ExtensionUtilities.js
   var IS_REVISION_166 = parseInt(REVISION) >= 166;
   var ray = /* @__PURE__ */ new Ray();
   var direction = /* @__PURE__ */ new Vector3();
   var tmpInverseMatrix = /* @__PURE__ */ new Matrix4();
   var origMeshRaycastFunc = Mesh.prototype.raycast;
-  var origBatchedRaycastFunc = BatchedMesh2 !== null ? BatchedMesh2.prototype.raycast : null;
+  var origBatchedRaycastFunc = BatchedMesh.prototype.raycast;
   var _worldScale = /* @__PURE__ */ new Vector3();
   var _mesh2 = /* @__PURE__ */ new Mesh();
   var _batchIntersects2 = [];
@@ -30410,31 +30948,27 @@ void main() {
     this.boundsTree = null;
   }
 
-  // Mechanical floral puzzle decor/app/catalog.js
+  // catalog.js
   var CATALOG = [
     {
       "id": "pot_1",
       "kind": "pot",
-      "path": "Pot/pot_1.glb",
-      "slots": null
+      "path": "Pot/pot_1.glb"
     },
     {
       "id": "pot_2",
       "kind": "pot",
-      "path": "Pot/pot_2.glb",
-      "slots": null
+      "path": "Pot/pot_2.glb"
     },
     {
       "id": "pot_3",
       "kind": "pot",
-      "path": "Pot/pot_3.glb",
-      "slots": null
+      "path": "Pot/pot_3.glb"
     },
     {
       "id": "pot_4",
       "kind": "pot",
-      "path": "Pot/pot_4.glb",
-      "slots": null
+      "path": "Pot/pot_4.glb"
     },
     {
       "id": "stem_1A_0",
@@ -30446,112 +30980,112 @@ void main() {
       "path": "Stem/A/stem_1A_0.glb"
     },
     {
-      "id": "stem_1A_15L",
+      "id": "stem_1A_15_L",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 15,
       "side": "L",
-      "path": "Stem/A/stem_1A_15L.glb"
+      "path": "Stem/A/stem_1A_15_L.glb"
     },
     {
-      "id": "stem_1A_15R",
+      "id": "stem_1A_15_R",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 15,
       "side": "R",
-      "path": "Stem/A/stem_1A_15R.glb"
+      "path": "Stem/A/stem_1A_15_R.glb"
     },
     {
-      "id": "stem_1A_30L",
+      "id": "stem_1A_30_L",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 30,
       "side": "L",
-      "path": "Stem/A/stem_1A_30L.glb"
+      "path": "Stem/A/stem_1A_30_L.glb"
     },
     {
-      "id": "stem_1A_30R",
+      "id": "stem_1A_30_R",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 30,
       "side": "R",
-      "path": "Stem/A/stem_1A_30R.glb"
+      "path": "Stem/A/stem_1A_30_R.glb"
     },
     {
-      "id": "stem_1A_45L",
+      "id": "stem_1A_45_L",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 45,
       "side": "L",
-      "path": "Stem/A/stem_1A_45L.glb"
+      "path": "Stem/A/stem_1A_45_L.glb"
     },
     {
-      "id": "stem_1A_45R",
+      "id": "stem_1A_45_R",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 45,
       "side": "R",
-      "path": "Stem/A/stem_1A_45R.glb"
+      "path": "Stem/A/stem_1A_45_R.glb"
     },
     {
-      "id": "stem_1A_60L",
+      "id": "stem_1A_60_L",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 60,
       "side": "L",
-      "path": "Stem/A/stem_1A_60L.glb"
+      "path": "Stem/A/stem_1A_60_L.glb"
     },
     {
-      "id": "stem_1A_60R",
+      "id": "stem_1A_60_R",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 60,
       "side": "R",
-      "path": "Stem/A/stem_1A_60R.glb"
+      "path": "Stem/A/stem_1A_60_R.glb"
     },
     {
-      "id": "stem_1A_75L",
+      "id": "stem_1A_75_L",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 75,
       "side": "L",
-      "path": "Stem/A/stem_1A_75L.glb"
+      "path": "Stem/A/stem_1A_75_L.glb"
     },
     {
-      "id": "stem_1A_75R",
+      "id": "stem_1A_75_R",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 75,
       "side": "R",
-      "path": "Stem/A/stem_1A_75R.glb"
+      "path": "Stem/A/stem_1A_75_R.glb"
     },
     {
-      "id": "stem_1A_90L",
+      "id": "stem_1A_90_L",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 90,
       "side": "L",
-      "path": "Stem/A/stem_1A_90L.glb"
+      "path": "Stem/A/stem_1A_90_L.glb"
     },
     {
-      "id": "stem_1A_90R",
+      "id": "stem_1A_90_R",
       "kind": "stem",
       "group": "A",
       "len": 1,
       "angle": 90,
       "side": "R",
-      "path": "Stem/A/stem_1A_90R.glb"
+      "path": "Stem/A/stem_1A_90_R.glb"
     },
     {
       "id": "stem_3A_0",
@@ -30680,112 +31214,112 @@ void main() {
       "path": "Stem/B/stem_1B_0.glb"
     },
     {
-      "id": "stem_1B_15L",
+      "id": "stem_1B_15_L",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 15,
       "side": "L",
-      "path": "Stem/B/stem_1B_15L.glb"
+      "path": "Stem/B/stem_1B_15_L.glb"
     },
     {
-      "id": "stem_1B_15R",
+      "id": "stem_1B_15_R",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 15,
       "side": "R",
-      "path": "Stem/B/stem_1B_15R.glb"
+      "path": "Stem/B/stem_1B_15_R.glb"
     },
     {
-      "id": "stem_1B_30L",
+      "id": "stem_1B_30_L",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 30,
       "side": "L",
-      "path": "Stem/B/stem_1B_30L.glb"
+      "path": "Stem/B/stem_1B_30_L.glb"
     },
     {
-      "id": "stem_1B_30R",
+      "id": "stem_1B_30_R",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 30,
       "side": "R",
-      "path": "Stem/B/stem_1B_30R.glb"
+      "path": "Stem/B/stem_1B_30_R.glb"
     },
     {
-      "id": "stem_1B_45L",
+      "id": "stem_1B_45_L",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 45,
       "side": "L",
-      "path": "Stem/B/stem_1B_45L.glb"
+      "path": "Stem/B/stem_1B_45_L.glb"
     },
     {
-      "id": "stem_1B_45R",
+      "id": "stem_1B_45_R",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 45,
       "side": "R",
-      "path": "Stem/B/stem_1B_45R.glb"
+      "path": "Stem/B/stem_1B_45_R.glb"
     },
     {
-      "id": "stem_1B_60L",
+      "id": "stem_1B_60_L",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 60,
       "side": "L",
-      "path": "Stem/B/stem_1B_60L.glb"
+      "path": "Stem/B/stem_1B_60_L.glb"
     },
     {
-      "id": "stem_1B_60R",
+      "id": "stem_1B_60_R",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 60,
       "side": "R",
-      "path": "Stem/B/stem_1B_60R.glb"
+      "path": "Stem/B/stem_1B_60_R.glb"
     },
     {
-      "id": "stem_1B_75L",
+      "id": "stem_1B_75_L",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 75,
       "side": "L",
-      "path": "Stem/B/stem_1B_75L.glb"
+      "path": "Stem/B/stem_1B_75_L.glb"
     },
     {
-      "id": "stem_1B_75R",
+      "id": "stem_1B_75_R",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 75,
       "side": "R",
-      "path": "Stem/B/stem_1B_75R.glb"
+      "path": "Stem/B/stem_1B_75_R.glb"
     },
     {
-      "id": "stem_1B_90L",
+      "id": "stem_1B_90_L",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 90,
       "side": "L",
-      "path": "Stem/B/stem_1B_90L.glb"
+      "path": "Stem/B/stem_1B_90_L.glb"
     },
     {
-      "id": "stem_1B_90R",
+      "id": "stem_1B_90_R",
       "kind": "stem",
       "group": "B",
       "len": 1,
       "angle": 90,
       "side": "R",
-      "path": "Stem/B/stem_1B_90R.glb"
+      "path": "Stem/B/stem_1B_90_R.glb"
     },
     {
       "id": "stem_3B_0",
@@ -30918,8 +31452,8 @@ void main() {
         "variant": "a",
         "side": "l"
       },
-      "path": "Connector/c_mum_leaf_a_l.glb",
-      "display": "菊花葉 A 左"
+      "path": "Leaf/Connector/c_mum_leaf_a_l.glb",
+      "display": "Mum Leaf A Left"
     },
     {
       "id": "c_mum_leaf_a_r",
@@ -30929,8 +31463,8 @@ void main() {
         "variant": "a",
         "side": "r"
       },
-      "path": "Connector/c_mum_leaf_a_r.glb",
-      "display": "菊花葉 A 右"
+      "path": "Leaf/Connector/c_mum_leaf_a_r.glb",
+      "display": "Mum Leaf A Right"
     },
     {
       "id": "c_mum_leaf_b_l",
@@ -30940,8 +31474,8 @@ void main() {
         "variant": "b",
         "side": "l"
       },
-      "path": "Connector/c_mum_leaf_b_l.glb",
-      "display": "菊花葉 B 左"
+      "path": "Leaf/Connector/c_mum_leaf_b_l.glb",
+      "display": "Mum Leaf B Left"
     },
     {
       "id": "c_mum_leaf_b_r",
@@ -30951,8 +31485,8 @@ void main() {
         "variant": "b",
         "side": "r"
       },
-      "path": "Connector/c_mum_leaf_b_r.glb",
-      "display": "菊花葉 B 右"
+      "path": "Leaf/Connector/c_mum_leaf_b_r.glb",
+      "display": "Mum Leaf B Right"
     },
     {
       "id": "c_rose_leaf_a_l",
@@ -30962,8 +31496,8 @@ void main() {
         "variant": "a",
         "side": "l"
       },
-      "path": "Connector/c_rose_leaf_a_l.glb",
-      "display": "玫瑰葉 A 左"
+      "path": "Leaf/Connector/c_rose_leaf_a_l.glb",
+      "display": "Rose Leaf A Left"
     },
     {
       "id": "c_rose_leaf_a_r",
@@ -30973,8 +31507,8 @@ void main() {
         "variant": "a",
         "side": "r"
       },
-      "path": "Connector/c_rose_leaf_a_r.glb",
-      "display": "玫瑰葉 A 右"
+      "path": "Leaf/Connector/c_rose_leaf_a_r.glb",
+      "display": "Rose Leaf A Right"
     },
     {
       "id": "c_rose_leaf_b_l",
@@ -30984,8 +31518,8 @@ void main() {
         "variant": "b",
         "side": "l"
       },
-      "path": "Connector/c_rose_leaf_b_l.glb",
-      "display": "玫瑰葉 B 左"
+      "path": "Leaf/Connector/c_rose_leaf_b_l.glb",
+      "display": "Rose Leaf B Left"
     },
     {
       "id": "c_rose_leaf_b_r",
@@ -30995,8 +31529,8 @@ void main() {
         "variant": "b",
         "side": "r"
       },
-      "path": "Connector/c_rose_leaf_b_r.glb",
-      "display": "玫瑰葉 B 右"
+      "path": "Leaf/Connector/c_rose_leaf_b_r.glb",
+      "display": "Rose Leaf B Right"
     },
     {
       "id": "c_tulip_leaf_a_l",
@@ -31006,8 +31540,8 @@ void main() {
         "variant": "a",
         "side": "l"
       },
-      "path": "Connector/c_tulip_leaf_a_l.glb",
-      "display": "鬱金香葉 A 左"
+      "path": "Leaf/Connector/c_tulip_leaf_a_l.glb",
+      "display": "Tulip Leaf A Left"
     },
     {
       "id": "c_tulip_leaf_a_r",
@@ -31017,8 +31551,8 @@ void main() {
         "variant": "a",
         "side": "r"
       },
-      "path": "Connector/c_tulip_leaf_a_r.glb",
-      "display": "鬱金香葉 A 右"
+      "path": "Leaf/Connector/c_tulip_leaf_a_r.glb",
+      "display": "Tulip Leaf A Right"
     },
     {
       "id": "c_tulip_leaf_b_l",
@@ -31028,8 +31562,8 @@ void main() {
         "variant": "b",
         "side": "l"
       },
-      "path": "Connector/c_tulip_leaf_b_l.glb",
-      "display": "鬱金香葉 B 左"
+      "path": "Leaf/Connector/c_tulip_leaf_b_l.glb",
+      "display": "Tulip Leaf B Left"
     },
     {
       "id": "c_tulip_leaf_b_r",
@@ -31039,61 +31573,62 @@ void main() {
         "variant": "b",
         "side": "r"
       },
-      "path": "Connector/c_tulip_leaf_b_r.glb",
-      "display": "鬱金香葉 B 右"
+      "path": "Leaf/Connector/c_tulip_leaf_b_r.glb",
+      "display": "Tulip Leaf B Right"
     },
     {
       "id": "e_lotus_anime",
       "kind": "end",
       "type": "flower",
       "flower": "lotus",
-      "path": "End object/e_lotus_anime.glb",
-      "display": "蓮花"
-    },
-    {
-      "id": "e_lotus_leaf_a",
-      "kind": "end",
-      "type": "lotus-leaf",
-      "leafVariant": "a",
-      "path": "End object/e_lotus_leaf_a.glb",
-      "display": "蓮葉 A"
-    },
-    {
-      "id": "e_lotus_leaf_b",
-      "kind": "end",
-      "type": "lotus-leaf",
-      "leafVariant": "b",
-      "path": "End object/e_lotus_leaf_b.glb",
-      "display": "蓮葉 B"
+      "path": "Flower/e_lotus_anime.glb",
+      "display": "Lotus"
     },
     {
       "id": "e_mum_anime",
       "kind": "end",
       "type": "flower",
       "flower": "mum",
-      "path": "End object/e_mum_anime.glb",
-      "display": "菊花"
+      "path": "Flower/e_mum_anime.glb",
+      "display": "Mum"
     },
     {
       "id": "e_rose_anime",
       "kind": "end",
       "type": "flower",
       "flower": "rose",
-      "path": "End object/e_rose_anime.glb",
-      "display": "玫瑰"
+      "path": "Flower/e_rose_anime.glb",
+      "display": "Rose"
     },
     {
       "id": "e_tulip_a_anime",
       "kind": "end",
       "type": "flower",
       "flower": "tulip",
-      "path": "End object/e_tulip_a_anime.glb",
-      "display": "鬱金香"
+      "path": "Flower/e_tulip_a_anime.glb",
+      "display": "Tulip"
+    },
+    {
+      "id": "e_lotus_leaf_a",
+      "kind": "end",
+      "type": "lotus-leaf",
+      "leafVariant": "a",
+      "path": "Leaf/End/e_lotus_leaf_a.glb",
+      "display": "Lotus Leaf A"
+    },
+    {
+      "id": "e_lotus_leaf_b",
+      "kind": "end",
+      "type": "lotus-leaf",
+      "leafVariant": "b",
+      "path": "Leaf/End/e_lotus_leaf_b.glb",
+      "display": "Lotus Leaf B"
     }
   ];
   var byId = Object.fromEntries(CATALOG.map((p) => [p.id, p]));
 
-  // Mechanical floral puzzle decor/app/main.js
+  // main.js
+  var import_gif = __toESM(require_gif());
   var canvas = document.getElementById("stage");
   var renderer = new WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -31103,7 +31638,7 @@ void main() {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFSoftShadowMap;
   var scene = new Scene();
-  scene.background = new Color("#20241f");
+  scene.background = new Color("#9a9a9a");
   var pmrem = new PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.5;
@@ -31180,7 +31715,7 @@ void main() {
     const bin = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) bin[i] = raw.charCodeAt(i);
     if (!("DecompressionStream" in globalThis)) {
-      throw new Error("此瀏覽器不支援 DecompressionStream,請改用較新的 Chrome / Edge / Firefox。");
+      throw new Error("This browser does not support DecompressionStream. Please use a newer Chrome / Edge / Firefox.");
     }
     const stream = new Blob([bin]).stream().pipeThrough(new DecompressionStream("gzip"));
     return new Response(stream).arrayBuffer();
@@ -31198,13 +31733,13 @@ void main() {
           try {
             gltf = await gltfLoader.loadAsync(MODEL_BASE + def.path);
           } catch (e) {
-            console.warn("models/ 讀取失敗,改用內嵌:", def.path);
+            console.warn("models/ fetch failed, falling back to embedded data:", def.path);
           }
         }
         if (!gltf) {
           const b64 = window.__MODEL_DATA?.[id];
           if (!b64) {
-            console.warn("缺少模型資料:", id);
+            console.warn("Missing model data:", id);
             done++;
             continue;
           }
@@ -31233,8 +31768,8 @@ void main() {
     });
     await Promise.all(workers);
   }
-  var potPreviews = {};
-  function makePotPreviews() {
+  var piecePreviews = {};
+  function makePiecePreviews() {
     const r2 = new WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     r2.setSize(160, 160);
     r2.setPixelRatio(1);
@@ -31248,7 +31783,7 @@ void main() {
     d2.position.set(-0.7, 0.3, -0.6);
     s2.add(d2);
     const cam = new PerspectiveCamera(33, 1, 0.01, 10);
-    for (const p of CATALOG.filter((x) => x.kind === "pot")) {
+    for (const p of CATALOG.filter((x) => x.kind === "pot" || x.kind === "end" || x.kind === "conn" || x.kind === "stem")) {
       const obj = assets[p.id].template;
       s2.add(obj);
       obj.updateMatrixWorld(true);
@@ -31258,7 +31793,7 @@ void main() {
       cam.position.copy(c).addScaledVector(new Vector3(0.55, 0.42, 0.72).normalize(), radius * 3.1);
       cam.lookAt(c);
       r2.render(s2, cam);
-      potPreviews[p.id] = r2.domElement.toDataURL("image/png");
+      piecePreviews[p.id] = r2.domElement.toDataURL("image/png");
       s2.remove(obj);
     }
     r2.dispose();
@@ -31283,6 +31818,62 @@ void main() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
     }
+    if (typeof activeDesign === "number" && activeDesign >= 0) saveDesign(activeDesign);
+  }
+  var DESIGN_COUNT = 3;
+  var activeDesign = -1;
+  var designKey = (i) => `mechanical-floral-design-${i}`;
+  function loadDesign(i) {
+    try {
+      const raw = localStorage.getItem(designKey(i));
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+  function saveDesign(i) {
+    if (i < 0) return;
+    try {
+      localStorage.setItem(designKey(i), JSON.stringify({ pot: state.pot, slots: state.slots }));
+      const dot = $("#designRow")?.children[i]?.querySelector(".dot");
+      if (dot) dot.classList.add("filled");
+    } catch {
+    }
+  }
+  function renderDesignRow() {
+    const row = $("#designRow");
+    row.innerHTML = "";
+    for (let i = 0; i < DESIGN_COUNT; i++) {
+      const b = document.createElement("button");
+      b.className = "chip";
+      b.setAttribute("aria-pressed", String(activeDesign === i));
+      const has = !!loadDesign(i);
+      const dot = document.createElement("span");
+      dot.className = "dot" + (has ? " filled" : "");
+      const t = document.createElement("span");
+      t.textContent = `Design ${i + 1}`;
+      b.append(dot, t);
+      b.title = has ? "Saved design — click to switch" : "Empty — click to start a new design";
+      b.onclick = () => switchDesign(i);
+      row.appendChild(b);
+    }
+  }
+  function switchDesign(i) {
+    if (activeDesign === i) return;
+    if (activeDesign >= 0) saveDesign(activeDesign);
+    activeDesign = i;
+    localStorage.setItem("mechanical-floral-design-active", String(i));
+    const d = loadDesign(i);
+    state.pot = d?.pot || "pot_1";
+    state.slots = Array.isArray(d?.slots) ? d.slots.filter(Boolean) : [];
+    migrateSlots();
+    saveState();
+    selectedSlot = -1;
+    $("#secBuilder").hidden = true;
+    rebuild();
+    renderPotSelect();
+    renderSlotRow();
+    renderDesignRow();
   }
   function loadState() {
     if (location.hash.length > 2) {
@@ -31303,6 +31894,7 @@ void main() {
   function placeChain(rootFrame, steps, slotIdx) {
     const placed = [];
     let frame = rootFrame;
+    const UNIT_S = new Vector3(1, 1, 1);
     for (let i = 0; i < steps.length; i++) {
       const st = steps[i];
       const a = assets[st.v];
@@ -31317,8 +31909,10 @@ void main() {
       placed.push(obj);
       if (st.k === "end" && a.clip) setupFlowerBloom(obj, a, slotIdx, i, st);
       if (st.k === "stem" && a.head) frame = nextFrame(obj, a.head);
-      else if (st.k === "conn" && a.out) frame = nextFrame(obj, a.out);
-      else break;
+      else if (st.k === "conn" && a.out) {
+        const m2 = new Matrix4().compose(frame.pos, frame.quat, UNIT_S).multiply(a.out);
+        frame = decompose(m2);
+      } else break;
     }
     return placed;
   }
@@ -31349,30 +31943,14 @@ void main() {
       ref.output.textContent = `${pct}%`;
     }
   }
-  function setAllBloom(b) {
-    flowerMixers.forEach((e) => setFlowerBloom(e, b));
-  }
-  var anyBloomPlaying = () => flowerMixers.some((e) => e.playing);
   function updatePlayUI() {
-    const playing = anyBloomPlaying();
-    const btn = $("#btnBloomPlay");
-    btn.setAttribute("aria-pressed", String(playing));
     bloomPlayRefs.forEach((pb, key) => {
       const entry = flowerMixers.find((e) => `${e.slotIdx}:${e.stepIndex}` === key);
       const on = !!entry?.playing;
       pb.textContent = on ? "⏸" : "▶";
       pb.setAttribute("aria-pressed", String(on));
-      pb.title = on ? "停止這朵的開闔展示" : "這朵花獨立開闔展示";
+      pb.title = on ? "Stop this flower's bloom cycle" : "Play this flower's bloom cycle";
     });
-  }
-  function updateBloomUI() {
-    const out = $("#bloomOut");
-    const slider = $("#bloomTimeline");
-    if (anyBloomPlaying()) {
-      const avg = flowerMixers.length ? flowerMixers.reduce((s, e) => s + e.bloom, 0) / flowerMixers.length : +slider.value / 100;
-      slider.value = Math.round(avg * 100);
-      out.textContent = `${Math.round(avg * 100)}%`;
-    }
   }
   function nextFrame(obj, localMat) {
     obj.updateMatrixWorld(true);
@@ -31510,7 +32088,7 @@ void main() {
     for (let p = 0; p < list.length; p++) {
       for (let r = p + 1; r < list.length; r++) {
         const a = list[p], b = list[r];
-        if (a.s === b.s && Math.abs(a.i - b.i) <= 1) continue;
+        if (a.s === b.s) continue;
         if (!obbsCollide(a, b)) continue;
         if (bvhReady) {
           if (exactMeshPair(a, b)) record(a, b, null);
@@ -31533,7 +32111,7 @@ void main() {
     }
     collisions = next;
   }
-  window.__dbg = { collisions: () => collisions, obbs: () => lastObbs, sat: obbsCollide, bvh: () => bvhReady, exact: exactMeshPair, pot: () => lastPot };
+  window.__dbg = { collisions: () => collisions, obbs: () => lastObbs, sat: obbsCollide, bvh: () => bvhReady, exact: exactMeshPair, pot: () => lastPot, target: () => controls.target, camera: () => camera.position };
   function rebuild() {
     assembly.traverse((o) => {
       if (o.isMesh) o.material?.dispose?.();
@@ -31741,53 +32319,120 @@ void main() {
   function showSpecimen(hit) {
     const piece = byId[hit?.pieceId];
     const steps = state.slots[hit?.slot] || [];
-    $("#specimenText").innerHTML = piece ? `${pieceDisplayName(piece)}<br><span class="sub">插槽 ${hit.slot + 1} · 該插槽共 ${steps.length} 個零件 · 點擊可調整</span>` : "";
+    $("#specimenText").innerHTML = piece ? `${pieceDisplayName(piece)}<br><span class="sub">Slot ${hit.slot + 1} · ${steps.length} part(s) in this slot · click to adjust</span>` : "";
     specimen.hidden = !piece;
   }
   function hideSpecimen() {
     specimen.hidden = true;
   }
-  var SIDE_CN = { L: "左", R: "右" };
+  var SIDE_EN = { L: "L", R: "R" };
   function pieceDisplayName(p) {
-    if (p.kind === "pot") return `花盆 ${p.id.slice(4)} 號`;
+    if (p.kind === "pot") return `Pot ${p.id.slice(4)}`;
     if (p.kind === "stem") {
-      const ang = p.angle === 0 ? "直" : `${p.angle}°${SIDE_CN[p.side]}`;
-      return `${p.group} 類莖 (${p.len === 1 ? "短" : "長"}) ${ang}`;
+      const ang = p.angle === 0 ? "Straight" : `${p.angle}°${SIDE_EN[p.side]}`;
+      return `Type-${p.group} Stem (${p.len === 1 ? "Short" : "Long"}) ${ang}`;
     }
     if (p.kind === "conn") {
-      if (!p.leaf) return "素連接器";
-      const cn = { tulip: "鬱金香", mum: "菊花", rose: "玫瑰" }[p.leaf.flower];
-      return `${cn}葉 ${p.leaf.variant.toUpperCase()} ${SIDE_CN[p.leaf.side.toUpperCase()]}`;
+      if (!p.leaf) return "Plain Connector";
+      return `${{ tulip: "Tulip", mum: "Mum", rose: "Rose" }[p.leaf.flower]} Leaf ${p.leaf.variant.toUpperCase()} ${SIDE_EN[p.leaf.side.toUpperCase()]}`;
     }
     return p.display || p.id;
   }
   var selectedSlot = -1;
-  function renderPotRow() {
-    const row = $("#potRow");
-    row.innerHTML = "";
+  var potLabel = (p) => `Pot ${p.id.slice(4)}`;
+  var potSlotCount = (p) => assets[p.id]?.slots.length ?? "?";
+  function renderPotSelect() {
+    const btn = $("#potBtn");
+    const cur = CATALOG.find((p) => p.id === state.pot) || CATALOG.find((p) => p.kind === "pot");
+    btn.querySelector(".name").textContent = potLabel(cur);
+    btn.querySelector(".meta").textContent = `${potSlotCount(cur)} slots`;
+    renderPotMenu();
+  }
+  function renderPotMenu() {
+    const menu = $("#potMenu");
+    menu.innerHTML = "";
     CATALOG.filter((p) => p.kind === "pot").forEach((p) => {
       const b = document.createElement("button");
-      b.className = "pot-card";
-      const n = assets[p.id]?.slots.length ?? "?";
-      b.innerHTML = `
-      <img class="pot-thumb" src="${potPreviews[p.id] || ""}" alt="${p.id} 預覽">
-      <span class="pot-meta"><span class="pot-slots">${n}</span><i>slot</i></span>
-      <span class="pot-name">${p.id}</span>`;
-      b.title = pieceDisplayName(p) + ` — ${n} 個插槽`;
-      b.setAttribute("aria-pressed", state.pot === p.id);
+      b.className = "pot-item";
+      b.setAttribute("role", "option");
+      b.setAttribute("aria-selected", String(state.pot === p.id));
+      const img = document.createElement("img");
+      img.className = "pot-item-thumb";
+      img.src = piecePreviews[p.id] || "";
+      img.alt = potLabel(p);
+      const name = document.createElement("span");
+      name.className = "name";
+      name.textContent = potLabel(p);
+      const meta = document.createElement("span");
+      meta.className = "meta";
+      meta.textContent = `${potSlotCount(p)} slots`;
+      b.append(img, name, meta);
       b.onclick = () => {
-        state.pot = p.id;
-        state.slots = [];
-        selectedSlot = -1;
-        $("#secBuilder").hidden = true;
-        saveState();
-        rebuild();
-        renderPotRow();
+        const changed = state.pot !== p.id;
+        if (changed) {
+          state.pot = p.id;
+          state.slots = [];
+          selectedSlot = -1;
+          $("#secBuilder").hidden = true;
+          saveState();
+          rebuild();
+        }
+        closePotMenu();
+        renderPotSelect();
         renderSlotRow();
       };
-      row.appendChild(b);
+      menu.appendChild(b);
     });
   }
+  function updatePotMenu(open) {
+    const menu = $("#potMenu");
+    const btn = $("#potBtn");
+    if (open) {
+      menu.hidden = false;
+      const r = btn.getBoundingClientRect();
+      menu.style.left = `${r.right + 10}px`;
+      menu.style.top = `${Math.max(12, Math.min(r.top, innerHeight - menu.offsetHeight - 12))}px`;
+      btn.setAttribute("aria-expanded", "true");
+    } else {
+      menu.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    }
+  }
+  var closePotMenu = () => updatePotMenu(false);
+  $("#potBtn").onclick = () => updatePotMenu($("#potMenu").hidden);
+  document.addEventListener("pointerdown", (ev) => {
+    if ($("#potMenu").hidden) return;
+    if (!ev.target.closest("#potMenu") && !ev.target.closest("#potBtn")) closePotMenu();
+  });
+  $("#panel").addEventListener("scroll", () => {
+    if (!$("#potMenu").hidden) closePotMenu();
+  }, { passive: true });
+  function positionPanelToggle() {
+    const btn = $("#btnPanel");
+    const panel = $("#panel");
+    if (panel.hidden) {
+      btn.style.left = "-13px";
+      btn.style.top = `${Math.round(innerHeight / 2 - btn.offsetHeight / 2)}px`;
+    } else {
+      const r = panel.getBoundingClientRect();
+      btn.style.left = `${Math.round(r.right - 13)}px`;
+      btn.style.top = `${Math.round(r.top + r.height / 2 - btn.offsetHeight / 2)}px`;
+    }
+  }
+  $("#btnPanel").onclick = () => {
+    const panel = $("#panel");
+    const show = panel.hidden;
+    panel.hidden = !show;
+    $("#btnPanel").setAttribute("aria-pressed", String(show));
+    if (!show) closePotMenu();
+    positionPanelToggle();
+  };
+  $("#slotsToggle").onclick = () => {
+    const open = !$("#slotsBody").hidden;
+    $("#slotsBody").hidden = open;
+    $("#slotsGroup").classList.toggle("open", !open);
+    $("#slotsToggle").setAttribute("aria-expanded", String(!open));
+  };
   function chainDone(steps) {
     if (!steps.length) return "empty";
     const last = steps[steps.length - 1];
@@ -31801,21 +32446,23 @@ void main() {
     }
     const keys = /* @__PURE__ */ new Set();
     for (const p of collisions.pairs) {
-      if (!p.b) keys.add(`slot ${p.a.s + 1}(零件與花盆)`);
-      else if (p.a.s === p.b.s) keys.add(`slot ${p.a.s + 1}(彼此零件)`);
+      if (!p.b) keys.add(`slot ${p.a.s + 1} (piece vs pot)`);
+      else if (p.a.s === p.b.s) keys.add(`slot ${p.a.s + 1} (pieces clash)`);
       else keys.add(`slot ${Math.min(p.a.s, p.b.s) + 1} × slot ${Math.max(p.a.s, p.b.s) + 1}`);
     }
-    el.textContent = bvhReady ? `⚠ 碰撞:${[...keys].join("、")}` : `⚠ 疑似交疊(近似檢測):${[...keys].join("、")}`;
+    el.textContent = bvhReady ? `⚠ Collision: ${[...keys].join(", ")}` : `⚠ Possible overlap (approximate): ${[...keys].join(", ")}`;
     el.hidden = false;
   }
   function renderSlotRow() {
     const map = $("#slotRow");
-    map.className = "slot-map";
+    map.className = "slot-grid";
     map.innerHTML = "";
-    if (!state.pot || !slotFrames.length) return;
-    const xs = slotFrames.map((f) => f.pos.x), zs = slotFrames.map((f) => f.pos.z);
-    const span = (v) => Math.max(...v) - Math.min(...v);
-    const toPct = (v, arr) => span(arr) < 1e-5 ? 50 : 22 + (v - Math.min(...arr)) / span(arr) * 56;
+    if (!state.pot || !slotFrames.length) {
+      map.hidden = true;
+      return;
+    }
+    map.hidden = false;
+    const cols = Math.min(4, Math.max(1, Math.ceil(Math.sqrt(slotFrames.length))));
     for (let i = 0; i < slotFrames.length; i++) {
       const b = document.createElement("button");
       b.className = "slot-node";
@@ -31825,9 +32472,8 @@ void main() {
       if (collisions.bySlot.has(i)) b.classList.add("collide");
       else if (st === "warn") b.classList.add("warn");
       else if (st === "done") b.classList.add("filled");
-      b.style.left = `${toPct(slotFrames[i].pos.x, xs)}%`;
-      b.style.top = `${toPct(slotFrames[i].pos.z, zs)}%`;
       b.setAttribute("aria-pressed", String(selectedSlot === i));
+      b.style.gridColumn = String(i % cols + 1);
       b.onclick = () => selectSlot(i);
       map.appendChild(b);
     }
@@ -31835,7 +32481,7 @@ void main() {
   function selectSlot(i) {
     selectedSlot = i;
     $("#secBuilder").hidden = false;
-    $("#builderTitle").textContent = `組裝 slot ${i + 1}`;
+    $("#builderTitle").textContent = `Assemble slot ${i + 1}`;
     renderSlotRow();
     renderBuilder();
   }
@@ -31848,111 +32494,174 @@ void main() {
     const rad = Math.atan2(-lx * d.z, lx * d.x);
     return Math.round((MathUtils.radToDeg(rad) + 360) / 5) * 5 % 360;
   }
-  function stemChips(group, onPick, len) {
-    const grid = document.createElement("div");
-    grid.className = "picker-grid";
-    CATALOG.filter((p) => p.kind === "stem" && p.group === group && p.len === len).forEach((p) => {
-      const b = document.createElement("button");
-      b.className = "chip";
-      b.textContent = p.angle === 0 ? "直" : `${p.angle}°${SIDE_CN[p.side]}`;
-      b.title = pieceDisplayName(p) + `(${p.id})`;
-      b.dataset.piece = p.id;
-      b.onclick = () => onPick(p);
-      grid.appendChild(b);
-    });
-    return grid;
+  function stemPieceFor(group, len, angle, side) {
+    return CATALOG.find((x) => x.kind === "stem" && x.group === group && x.len === len && x.angle === angle && (angle === 0 ? !x.side : (x.side || "").toUpperCase() === (side || "L").toUpperCase()));
   }
-  function renderStemPicker(stepIndex, group) {
-    const wrap = document.createElement("div");
-    const pick = (p) => addStep(stepIndex, { k: "stem", v: p.id, s: suggestSpin(slotFrames[selectedSlot], p) });
-    const labels = { A: "A 類莖(頭接花朵)", B: "B 類莖(頭接連接器)" };
-    const groups = group ? [group] : ["A", "B"];
-    groups.forEach((g) => {
-      const p = document.createElement("p");
-      p.className = "picker-label";
-      p.textContent = labels[g];
-      wrap.appendChild(p);
-      [[1, "短莖"], [3, "長莖"]].forEach(([len, cn]) => {
-        const sub = document.createElement("p");
-        sub.className = "picker-label";
-        sub.style.opacity = ".75";
-        sub.textContent = cn;
-        wrap.appendChild(sub);
-        wrap.appendChild(stemChips(g, pick, len));
-      });
-      wrap.appendChild(Object.assign(document.createElement("div"), { className: "step-gap" }));
-    });
-    return wrap;
+  function resolveStem(st) {
+    const p = stemPieceFor(st.group, st.len, st.angle, st.side);
+    if (p) st.v = p.id;
+    return p;
   }
-  function renderEndPicker(stepIndex) {
-    const wrap = document.createElement("div");
-    const p0 = document.createElement("p");
-    p0.className = "picker-label";
-    p0.textContent = "接花或葉(A 莖頭 = 終點)";
-    const grid = document.createElement("div");
-    grid.className = "picker-grid";
-    CATALOG.filter((x) => x.kind === "end").forEach((x) => {
-      const b = document.createElement("button");
-      b.className = "chip";
-      b.textContent = pieceDisplayName(x);
-      b.title = x.id;
-      b.dataset.piece = x.id;
-      b.onclick = () => addStep(stepIndex, { k: "end", v: x.id, s: 0 });
-      grid.appendChild(b);
-    });
-    wrap.appendChild(p0);
-    wrap.appendChild(grid);
-    return wrap;
+  function migrateSlots() {
+    state.slots = (state.slots || []).map((steps) => steps.filter((st) => st && st.v));
+    for (const steps of state.slots) for (const st of steps) {
+      if (st.k !== "stem") continue;
+      if (!st.group) {
+        const p = byId[st.v];
+        if (p) {
+          st.group = p.group;
+          st.len = p.len;
+          st.angle = p.angle;
+          st.side = p.side;
+          continue;
+        }
+      }
+      if (!byId[st.v]) {
+        const m = /^stem_([13])([AB])_(\d+)(?:_?)([LR])?/i.exec(st.v || "");
+        if (m) {
+          st.group = m[2].toUpperCase();
+          st.len = +m[1];
+          st.angle = +m[3];
+          st.side = m[4] ? m[4].toUpperCase() : null;
+        }
+        resolveStem(st);
+      }
+    }
   }
-  function renderConnPicker(stepIndex) {
-    const wrap = document.createElement("div");
-    const p0 = document.createElement("p");
-    p0.className = "picker-label";
-    p0.textContent = "接連接器(B 莖頭 = 可延伸)";
-    const grid = document.createElement("div");
-    grid.className = "picker-grid";
-    CATALOG.filter((x) => x.kind === "conn").forEach((x) => {
+  function ctlRow(label, min, max, step, value, fmt, oninput) {
+    const row = document.createElement("div");
+    row.className = "spin-row";
+    row.innerHTML = `<label></label><input type="range" min="${min}" max="${max}" step="${step}" value="${value}"><output></output>`;
+    row.querySelector("label").textContent = label;
+    const input = row.querySelector("input");
+    const out = row.querySelector("output");
+    out.textContent = fmt(value);
+    input.oninput = () => {
+      out.textContent = fmt(+input.value);
+      oninput(+input.value);
+    };
+    return { row, input, out };
+  }
+  var sideFmtLR = (val) => val ? "R" : "L";
+  function leafOptions() {
+    return CATALOG.filter((x) => x.kind === "conn" && x.leaf || x.kind === "end" && x.type === "lotus-leaf");
+  }
+  var flowerOptions = () => CATALOG.filter((x) => x.kind === "end" && x.type === "flower");
+  var pieceMenu = $("#pieceMenu");
+  function closePieceMenu() {
+    pieceMenu.hidden = true;
+  }
+  function openPieceMenu(anchor, options, metaFor, onPick) {
+    pieceMenu.innerHTML = "";
+    options.forEach((p) => {
       const b = document.createElement("button");
-      b.className = "chip";
-      b.textContent = pieceDisplayName(x);
-      b.title = x.id;
-      b.dataset.piece = x.id;
-      b.onclick = () => addStep(stepIndex, { k: "conn", v: x.id, s: 0 });
-      grid.appendChild(b);
+      b.className = "pot-item";
+      b.setAttribute("role", "option");
+      const img = document.createElement("img");
+      img.className = "pot-item-thumb";
+      img.src = piecePreviews[p.id] || "";
+      img.alt = pieceDisplayName(p);
+      const name = document.createElement("span");
+      name.className = "name";
+      name.textContent = pieceDisplayName(p);
+      const meta = document.createElement("span");
+      meta.className = "meta";
+      meta.textContent = metaFor(p);
+      b.append(img, name, meta);
+      b.onclick = () => {
+        closePieceMenu();
+        onPick(p);
+      };
+      pieceMenu.appendChild(b);
     });
-    wrap.appendChild(p0);
-    wrap.appendChild(grid);
-    return wrap;
+    pieceMenu.hidden = false;
+    const r = anchor.getBoundingClientRect();
+    pieceMenu.style.left = `${r.right + 10}px`;
+    pieceMenu.style.top = `${Math.max(12, Math.min(r.top, innerHeight - pieceMenu.offsetHeight - 12))}px`;
+  }
+  function setStemGroup(st, group) {
+    if (st.group === group) return;
+    st.group = group;
+    resolveStem(st);
+    saveState();
+    replaceChain(selectedSlot);
+    renderSlotRow();
+  }
+  function newStem(group, len, angle, side) {
+    const piece = stemPieceFor(group, len, angle, side) || CATALOG.find((p) => p.kind === "stem");
+    const s = suggestSpin(slotFrames[selectedSlot], piece);
+    return { k: "stem", group, len, angle, side: side ?? null, s, v: piece.id };
   }
   function renderNextPicker() {
     const target = $("#nextPicker");
     target.innerHTML = "";
     const steps = state.slots[selectedSlot] || [];
     const last = steps[steps.length - 1];
-    let node;
-    if (!last) node = renderStemPicker(steps.length, null);
-    else if (last.k === "end") {
+    const addBtn = () => {
+      const b = document.createElement("button");
+      b.className = "btn-add";
+      b.textContent = "+ Add stem";
+      b.onclick = () => addStep(steps.length, newStem("A", 1, 0, null));
+      return b;
+    };
+    if (!last) {
+      target.appendChild(addBtn());
+      return;
+    }
+    if (last.k === "end") {
       const p = document.createElement("p");
       p.className = "hint";
-      p.textContent = "這條已開花,完成了。可再選其他插槽。";
-      node = p;
-    } else if (last.k === "conn") node = renderStemPicker(steps.length, null);
-    else if (last.k === "stem") {
-      if (byId[last.v].group === "A") node = renderEndPicker(steps.length);
-      else node = renderConnPicker(steps.length);
+      p.textContent = "This chain is complete — pick another slot.";
+      target.appendChild(p);
+      return;
     }
-    if (last?.k === "conn") {
-      const done = document.createElement("button");
-      done.className = "danger-btn";
-      done.textContent = "就這樣完成(連接器上方留空)";
-      done.onclick = () => {
-        toast("完成,可再選其他插槽。");
-      };
-      target.appendChild(node);
-      target.appendChild(done);
-    } else {
-      target.appendChild(node);
+    if (last.k === "conn") {
+      target.appendChild(addBtn());
+      return;
     }
+    const btns = document.createElement("div");
+    btns.className = "next-choices";
+    const make = (label, onclick) => {
+      const b = document.createElement("button");
+      b.className = "chip choice";
+      b.textContent = label;
+      b.setAttribute("data-menu-anchor", "yes");
+      b.onclick = onclick;
+      btns.appendChild(b);
+      return b;
+    };
+    make("Leaf", () => {
+      setStemGroup(last, "A");
+      openPieceMenu(
+        btns.querySelector(".choice"),
+        leafOptions(),
+        (p2) => p2.kind === "conn" ? "Chain continues" : "Chain ends here",
+        (p2) => {
+          if (p2.kind === "conn") addStep(steps.length, { k: "conn", v: p2.id, s: 0 });
+          else addStep(steps.length, { k: "end", v: p2.id, s: 0, b: 1 });
+          renderBuilder();
+        }
+      );
+    });
+    make("Stem", () => {
+      setStemGroup(last, "B");
+      addStep(steps.length, { k: "conn", v: "c_connector", s: 0 });
+      addStep(steps.length, newStem("A", 1, 0, null));
+      renderBuilder();
+    });
+    make("Flower", () => {
+      setStemGroup(last, "A");
+      openPieceMenu(
+        btns.querySelectorAll(".choice")[2],
+        flowerOptions(),
+        () => "Blooms",
+        (p2) => {
+          addStep(steps.length, { k: "end", v: p2.id, s: 0, b: 1 });
+          renderBuilder();
+        }
+      );
+    });
+    target.appendChild(btns);
   }
   function renderChainTree() {
     const tree = $("#chainTree");
@@ -31964,68 +32673,199 @@ void main() {
       const row = document.createElement("div");
       row.className = "chain-step";
       row.dataset.kind = st.k;
-      const kindCN = { stem: "莖", conn: "接", end: "花" }[st.k];
+      if (collisions.byStep.has(`${selectedSlot}:${i}`)) row.classList.add("collide");
       const head = document.createElement("div");
       head.className = "head-row";
-      head.innerHTML = `<span class="k">${kindCN}</span><span class="v">${pieceDisplayName(byId[st.v])}</span>`;
-      if (collisions.byStep.has(`${selectedSlot}:${i}`)) row.classList.add("collide");
-      row.appendChild(head);
       const x = document.createElement("button");
       x.className = "x";
       x.textContent = "×";
-      x.title = "從這節起移除";
+      x.title = "Remove from this step onward";
       x.onclick = () => removeStepFrom(i);
       head.appendChild(x);
+      const kindEN = st.k === "stem" ? "Stem" : st.k === "conn" ? byId[st.v]?.leaf ? pieceDisplayName(byId[st.v]) : "Connector" : pieceDisplayName(byId[st.v]);
+      const label = document.createElement("span");
+      label.className = "v";
+      label.textContent = kindEN;
+      head.appendChild(label);
       if (st.k === "end" && byId[st.v]?.anime) {
         const pb = document.createElement("button");
         pb.className = "mini-play";
         pb.textContent = "▶";
-        pb.title = "這朵花獨立開闔展示";
+        pb.title = "Play this flower's bloom cycle";
         pb.setAttribute("aria-pressed", "false");
         pb.onclick = () => toggleFlowerPlay(selectedSlot, i);
-        head.insertBefore(pb, x);
+        head.appendChild(pb);
         bloomPlayRefs.set(`${selectedSlot}:${i}`, pb);
       }
-      const spinRow = document.createElement("div");
-      spinRow.className = "spin-row";
-      spinRow.innerHTML = `<label>自轉</label><input type="range" min="0" max="355" step="5" value="${st.s}"><output>${st.s}°</output>`;
-      const range = spinRow.querySelector("input");
-      const out = spinRow.querySelector("output");
-      range.oninput = () => {
-        out.textContent = `${range.value}°`;
-        st.s = +range.value;
-        replaceChain(selectedSlot);
+      if (st.k === "end") {
+        const isFlower = byId[st.v]?.type === "flower";
+        const swap = document.createElement("button");
+        swap.className = "mini-play";
+        swap.textContent = "⇄";
+        swap.title = isFlower ? "Change flower" : "Change lotus leaf";
+        const opts = isFlower ? flowerOptions() : CATALOG.filter((q) => q.kind === "end" && q.type === "lotus-leaf");
+        swap.setAttribute("data-menu-anchor", "yes");
+        swap.onclick = () => openPieceMenu(
+          swap,
+          opts,
+          () => isFlower ? "Blooms" : "Chain ends here",
+          (p2) => {
+            if (p2.id === st.v) {
+              closePieceMenu();
+              return;
+            }
+            st.v = p2.id;
+            replaceChain(selectedSlot);
+            saveState();
+            renderBuilder();
+          }
+        );
+        head.appendChild(swap);
+      }
+      const fold = document.createElement("button");
+      fold.className = "fold";
+      fold.title = "Collapse / expand settings";
+      fold.setAttribute("aria-expanded", "true");
+      fold.innerHTML = `<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`;
+      head.appendChild(fold);
+      row.appendChild(head);
+      const body = document.createElement("div");
+      body.className = "ctl-body";
+      fold.onclick = () => {
+        body.hidden = !body.hidden;
+        fold.setAttribute("aria-expanded", String(!body.hidden));
       };
-      range.onchange = () => {
-        saveState();
-        renderSlotRow();
-        renderChainTree();
-        if (collisions.pairs.length) updateCollideStatus();
-      };
-      row.appendChild(spinRow);
-      if (st.k === "end" && byId[st.v]?.anime) {
-        const bloomRow = document.createElement("div");
-        bloomRow.className = "spin-row";
-        bloomRow.innerHTML = `<label>開花</label><input type="range" min="0" max="100" step="1" value="${Math.round((st.b ?? 1) * 100)}"><output>${Math.round((st.b ?? 1) * 100)}%</output>`;
-        const br = bloomRow.querySelector("input");
-        const bo = bloomRow.querySelector("output");
-        bloomRowRefs.set(`${selectedSlot}:${i}`, { input: br, output: bo });
-        br.oninput = () => {
-          bo.textContent = `${br.value}%`;
-          const entry = flowerMixers.find((e) => e.slotIdx === selectedSlot && e.stepIndex === i);
-          if (entry) setFlowerBloom(entry, +br.value / 100);
-          $("#bloomTimeline").value = br.value;
-          $("#bloomOut").textContent = `${br.value}%`;
-          saveState();
-        };
-        row.appendChild(bloomRow);
+      row.appendChild(body);
+      if (st.k === "stem") {
+        body.appendChild(ctlRow(
+          "Height",
+          0,
+          1,
+          1,
+          st.len === 1 ? 0 : 1,
+          (val) => val ? "Long" : "Short",
+          (val) => {
+            st.len = val ? 3 : 1;
+            resolveStem(st);
+            replaceChain(selectedSlot);
+            saveState();
+            renderSlotRow();
+          }
+        ).row);
+        body.appendChild(ctlRow(
+          "Curvature",
+          0,
+          90,
+          15,
+          st.angle,
+          (ang) => ang === 0 ? "Straight" : `${ang}°`,
+          (ang) => {
+            st.angle = ang;
+            if (ang === 0) st.side = null;
+            else if (!st.side) st.side = "L";
+            resolveStem(st);
+            replaceChain(selectedSlot);
+            saveState();
+            renderSlotRow();
+          }
+        ).row);
+        body.appendChild(ctlRow(
+          "L / R",
+          0,
+          1,
+          1,
+          st.side === "R" ? 1 : 0,
+          sideFmtLR,
+          (val) => {
+            st.side = val ? "R" : "L";
+            if (st.angle > 0) {
+              resolveStem(st);
+              replaceChain(selectedSlot);
+            }
+            saveState();
+          }
+        ).row);
+        body.appendChild(ctlRow(
+          "Rotation",
+          0,
+          355,
+          5,
+          st.s,
+          (deg) => `${deg}°`,
+          (val) => {
+            st.s = val;
+            replaceChain(selectedSlot);
+            saveState();
+          }
+        ).row);
+      } else if (st.k === "conn" && byId[st.v]?.leaf) {
+        const p = byId[st.v];
+        body.appendChild(ctlRow(
+          "L / R",
+          0,
+          1,
+          1,
+          p.leaf.side.toUpperCase() === "R" ? 1 : 0,
+          sideFmtLR,
+          (val) => {
+            const side = val ? "R" : "L";
+            const np = CATALOG.find((q) => q.kind === "conn" && q.leaf && q.leaf.flower === p.leaf.flower && q.leaf.variant === p.leaf.variant && q.leaf.side.toUpperCase() === side);
+            if (np) {
+              st.v = np.id;
+              replaceChain(selectedSlot);
+              saveState();
+            }
+          }
+        ).row);
+        body.appendChild(ctlRow(
+          "Rotation",
+          0,
+          355,
+          5,
+          st.s,
+          (deg) => `${deg}°`,
+          (val) => {
+            st.s = val;
+            replaceChain(selectedSlot);
+            saveState();
+          }
+        ).row);
+      } else if (st.k === "end") {
+        if (byId[st.v]?.anime) {
+          const bloomRow = document.createElement("div");
+          bloomRow.className = "spin-row";
+          bloomRow.innerHTML = `<label>Blooming</label><input type="range" min="0" max="100" step="1" value="${Math.round((st.b ?? 1) * 100)}"><output>${Math.round((st.b ?? 1) * 100)}%</output>`;
+          const br = bloomRow.querySelector("input");
+          const bo = bloomRow.querySelector("output");
+          bloomRowRefs.set(`${selectedSlot}:${i}`, { input: br, output: bo });
+          br.oninput = () => {
+            bo.textContent = `${br.value}%`;
+            const entry = flowerMixers.find((e) => e.slotIdx === selectedSlot && e.stepIndex === i);
+            if (entry) setFlowerBloom(entry, +br.value / 100);
+            saveState();
+          };
+          body.appendChild(bloomRow);
+        }
+        body.appendChild(ctlRow(
+          "Rotation",
+          0,
+          355,
+          5,
+          st.s,
+          (deg) => `${deg}°`,
+          (val) => {
+            st.s = val;
+            replaceChain(selectedSlot);
+            saveState();
+          }
+        ).row);
       }
       tree.appendChild(row);
     });
     if (steps.length && chainDone(steps) === "warn") {
       const tip = document.createElement("p");
       tip.className = "hint";
-      tip.textContent = "這條還沒完成:莖的頭部還空著。";
+      tip.textContent = "Chain incomplete: the stem head is still open.";
       tree.appendChild(tip);
     }
   }
@@ -32051,23 +32891,144 @@ void main() {
   $("#btnRotate").onclick = () => {
     controls.autoRotate = !controls.autoRotate;
     $("#btnRotate").setAttribute("aria-pressed", controls.autoRotate);
+    if (controls.autoRotate) {
+      const box = new Box3().setFromObject(assembly);
+      if (box.isEmpty()) return;
+      const c = box.getCenter(new Vector3());
+      camGoal.target.set(c.x, controls.target.y, c.z);
+      camGoal.frames = 110;
+    } else {
+      frameAssembly();
+    }
   };
+  function computeCrop() {
+    renderer.render(scene, camera);
+    const box = new Box3().setFromObject(assembly);
+    const v = new Vector3();
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (let i = 0; i < 8; i++) {
+      v.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(camera);
+      const px = (v.x * 0.5 + 0.5) * canvas.width;
+      const py = (-v.y * 0.5 + 0.5) * canvas.height;
+      if (px < minX) minX = px;
+      if (px > maxX) maxX = px;
+      if (py < minY) minY = py;
+      if (py > maxY) maxY = py;
+    }
+    const pad = Math.max(16, Math.min(maxX - minX, maxY - minY) * 0.05);
+    minX = Math.max(0, minX - pad);
+    minY = Math.max(0, minY - pad);
+    maxX = Math.min(canvas.width, maxX + pad);
+    maxY = Math.min(canvas.height, maxY + pad);
+    return {
+      sx: Math.round(minX),
+      sy: Math.round(minY),
+      cw: Math.max(1, Math.round(maxX - minX)),
+      ch: Math.max(1, Math.round(maxY - minY))
+    };
+  }
+  function downloadBlob(blob, name) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  async function withExportResolution(fn) {
+    const pr = renderer.getPixelRatio();
+    renderer.setPixelRatio(pr * 2);
+    renderer.setSize(innerWidth, innerHeight, false);
+    try {
+      return await fn();
+    } finally {
+      renderer.setPixelRatio(pr);
+      renderer.setSize(innerWidth, innerHeight, false);
+    }
+  }
+  function shootPng() {
+    withExportResolution(() => {
+      const { sx, sy, cw, ch } = computeCrop();
+      const c2 = document.createElement("canvas");
+      c2.width = cw;
+      c2.height = ch;
+      c2.getContext("2d").drawImage(canvas, sx, sy, cw, ch, 0, 0, cw, ch);
+      c2.toBlob((blob) => {
+        downloadBlob(blob, "mechanical-floral.png");
+        toast(`PNG downloaded (${cw}×${ch}).`);
+      });
+    });
+  }
+  async function shootGifOn(progress) {
+    progress.textContent = "Capturing frames…";
+    const wasAuto = controls.autoRotate;
+    controls.autoRotate = false;
+    const box = new Box3().setFromObject(assembly);
+    const c = box.getCenter(new Vector3());
+    const camStart = camera.position.clone();
+    const tgtStart = controls.target.clone();
+    const look = new Vector3(c.x, tgtStart.y, c.z);
+    const a0 = Math.atan2(camStart.z - c.z, camStart.x - c.x);
+    const radius = Math.hypot(camStart.x - c.x, camStart.z - c.z);
+    const frames = 80, fps = 8;
+    const pose = (angle) => {
+      camera.position.set(
+        c.x + radius * Math.cos(a0 + angle),
+        camStart.y,
+        c.z + radius * Math.sin(a0 + angle)
+      );
+      camera.lookAt(look);
+    };
+    let crop;
+    await withExportResolution(async () => {
+      pose(0);
+      crop = computeCrop();
+      const { sx, sy, cw, ch } = crop;
+      const c2 = document.createElement("canvas");
+      c2.width = cw;
+      c2.height = ch;
+      const ctx = c2.getContext("2d");
+      const gif = new import_gif.default({ workers: 2, quality: 8, width: cw, height: ch, workerScript: "gif.worker.js" });
+      for (let i = 0; i < frames; i++) {
+        pose(i / frames * Math.PI * 2);
+        renderer.render(scene, camera);
+        ctx.drawImage(canvas, sx, sy, cw, ch, 0, 0, cw, ch);
+        gif.addFrame(ctx, { copy: true, delay: Math.round(1e3 / fps) });
+        if (i % 6 === 0) {
+          progress.textContent = `Capturing ${i + 1}/${frames}…`;
+          await new Promise((r) => setTimeout(r, 0));
+        }
+      }
+      camera.position.copy(camStart);
+      controls.target.copy(tgtStart);
+      controls.update();
+      if (wasAuto) controls.autoRotate = true;
+      progress.textContent = "Encoding GIF…";
+      await new Promise((resolve) => {
+        gif.on("finished", (blob) => {
+          downloadBlob(blob, "mechanical-floral.gif");
+          resolve();
+        });
+        gif.render();
+      });
+    });
+    progress.textContent = "GIF downloaded.";
+  }
   var btnShot = $("#btnShot");
   btnShot.onclick = () => {
-    renderer.render(scene, camera);
-    canvas.toBlob((blob) => {
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "mechanical-floral.png";
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast("已下載圖片。");
-    });
+    $("#shootModal").hidden = false;
   };
+  $("#btnShotClose").onclick = () => {
+    $("#shootModal").hidden = true;
+  };
+  $("#shootModal").addEventListener("click", (ev) => {
+    if (ev.target.id === "shootModal") $("#shootModal").hidden = true;
+  });
+  $("#btnShotPng").onclick = () => shootPng();
+  $("#btnShotGif").onclick = () => shootGifOn($("#shootProgress"));
   $("#btnShare").onclick = () => {
     state.pot && saveState();
     history.replaceState(null, "", "#" + encodeState({ pot: state.pot, slots: state.slots }));
-    navigator.clipboard?.writeText(location.href).then(() => toast("分享連結已複製。"), () => toast("已更新網址,直接複製即可。"));
+    navigator.clipboard?.writeText(location.href).then(() => toast("Share link copied."), () => toast("URL updated — copy it from the address bar."));
   };
   $("#btnRule").onclick = () => {
     $("#ruleModal").hidden = false;
@@ -32088,32 +33049,61 @@ void main() {
   $("#ruleModal").addEventListener("click", (ev) => {
     if (ev.target.id === "ruleModal") $("#ruleModal").hidden = true;
   });
-  addEventListener("keydown", (ev) => {
-    if (ev.key === "Escape") $("#ruleModal").hidden = true;
-  });
-  $("#btnBloomPlay").onclick = () => {
-    if (flowerMixers.length === 0) {
-      toast("還沒有組好任何動畫花。");
-      return;
+  function renderPartsList() {
+    const list = $("#partsList");
+    list.innerHTML = "";
+    const counts = /* @__PURE__ */ new Map();
+    (state.slots || []).forEach((steps) => {
+      if (!Array.isArray(steps)) return;
+      steps.forEach((st) => {
+        if (st?.v) counts.set(st.v, (counts.get(st.v) || 0) + 1);
+      });
+    });
+    const KIND_ORDER = { pot: 0, stem: 1, conn: 2, end: 3 };
+    const used = CATALOG.filter((p) => p.kind === "pot" && p.id === state.pot || counts.has(p.id));
+    used.sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind] || pieceDisplayName(a).localeCompare(pieceDisplayName(b)));
+    used.forEach((p) => {
+      const n = p.kind === "pot" ? 1 : counts.get(p.id);
+      const row = document.createElement("div");
+      row.className = "parts-row";
+      const img = document.createElement("img");
+      img.className = "thumb";
+      img.src = piecePreviews[p.id] || "";
+      img.alt = pieceDisplayName(p);
+      const name = document.createElement("span");
+      name.className = "pname";
+      name.textContent = pieceDisplayName(p);
+      const count = document.createElement("span");
+      count.className = "pcount";
+      count.textContent = `× ${n}`;
+      row.append(img, name, count);
+      list.appendChild(row);
+    });
+    if (!used.length) {
+      const p = document.createElement("p");
+      p.className = "hint";
+      p.textContent = "Nothing assembled yet.";
+      list.appendChild(p);
     }
-    const start = !anyBloomPlaying();
-    flowerMixers.forEach((e) => {
-      e.playing = start;
-      e.t = 0;
-    });
-    updatePlayUI();
-    if (!start) saveState();
+  }
+  $("#btnParts").onclick = () => {
+    renderPartsList();
+    $("#partsModal").hidden = false;
   };
-  $("#bloomTimeline").oninput = (ev) => {
-    flowerMixers.forEach((e) => {
-      e.playing = false;
-    });
-    updatePlayUI();
-    const b = +ev.target.value / 100;
-    setAllBloom(b);
-    $("#bloomOut").textContent = `${ev.target.value}%`;
-    saveState();
+  $("#btnPartsClose").onclick = () => {
+    $("#partsModal").hidden = true;
   };
+  $("#partsModal").addEventListener("click", (ev) => {
+    if (ev.target.id === "partsModal") $("#partsModal").hidden = true;
+  });
+  addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape") {
+      $("#ruleModal").hidden = true;
+      $("#partsModal").hidden = true;
+      $("#shootModal").hidden = true;
+      closePieceMenu();
+    }
+  });
   function toggleFlowerPlay(slotIdx, stepIndex) {
     const entry = flowerMixers.find((e) => e.slotIdx === slotIdx && e.stepIndex === stepIndex);
     if (!entry) return;
@@ -32126,6 +33116,7 @@ void main() {
     camera.updateProjectionMatrix();
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
+    positionPanelToggle();
   });
   var pulseT = 0;
   var lastLoopT = performance.now();
@@ -32143,7 +33134,6 @@ void main() {
           setFlowerBloom(e, phase);
         }
       }
-      updateBloomUI();
     }
     if (camGoal.frames > 0) {
       camGoal.frames--;
@@ -32170,16 +33160,21 @@ void main() {
     await detectModelMode();
     await loadAll((done, total, id) => {
       fill.style.width = `${done / total * 100}%`;
-      msg.textContent = `載入零件 ${done}/${total} — ${id}`;
+      msg.textContent = `Loading parts ${done}/${total} — ${id}`;
     });
-    makePotPreviews();
+    makePiecePreviews();
     await initBVH();
     loadState();
+    migrateSlots();
+    const ad = parseInt(localStorage.getItem("mechanical-floral-design-active") || "-1", 10);
+    if (ad >= 0 && ad < DESIGN_COUNT) activeDesign = ad;
+    renderDesignRow();
     if (!state.pot) state.pot = "pot_1";
     if (!Array.isArray(state.slots)) state.slots = [];
     rebuild();
-    renderPotRow();
+    renderPotSelect();
     renderSlotRow();
+    positionPanelToggle();
     loop();
     setTimeout(() => {
       $("#loading").classList.add("done");

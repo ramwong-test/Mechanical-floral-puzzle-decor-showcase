@@ -30,112 +30,112 @@ export const CATALOG = [
     "path": "Stem/A/stem_1A_0.glb"
   },
   {
-    "id": "stem_1A_15L",
+    "id": "stem_1A_15_L",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 15,
     "side": "L",
-    "path": "Stem/A/stem_1A_15L.glb"
+    "path": "Stem/A/stem_1A_15_L.glb"
   },
   {
-    "id": "stem_1A_15R",
+    "id": "stem_1A_15_R",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 15,
     "side": "R",
-    "path": "Stem/A/stem_1A_15R.glb"
+    "path": "Stem/A/stem_1A_15_R.glb"
   },
   {
-    "id": "stem_1A_30L",
+    "id": "stem_1A_30_L",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 30,
     "side": "L",
-    "path": "Stem/A/stem_1A_30L.glb"
+    "path": "Stem/A/stem_1A_30_L.glb"
   },
   {
-    "id": "stem_1A_30R",
+    "id": "stem_1A_30_R",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 30,
     "side": "R",
-    "path": "Stem/A/stem_1A_30R.glb"
+    "path": "Stem/A/stem_1A_30_R.glb"
   },
   {
-    "id": "stem_1A_45L",
+    "id": "stem_1A_45_L",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 45,
     "side": "L",
-    "path": "Stem/A/stem_1A_45L.glb"
+    "path": "Stem/A/stem_1A_45_L.glb"
   },
   {
-    "id": "stem_1A_45R",
+    "id": "stem_1A_45_R",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 45,
     "side": "R",
-    "path": "Stem/A/stem_1A_45R.glb"
+    "path": "Stem/A/stem_1A_45_R.glb"
   },
   {
-    "id": "stem_1A_60L",
+    "id": "stem_1A_60_L",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 60,
     "side": "L",
-    "path": "Stem/A/stem_1A_60L.glb"
+    "path": "Stem/A/stem_1A_60_L.glb"
   },
   {
-    "id": "stem_1A_60R",
+    "id": "stem_1A_60_R",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 60,
     "side": "R",
-    "path": "Stem/A/stem_1A_60R.glb"
+    "path": "Stem/A/stem_1A_60_R.glb"
   },
   {
-    "id": "stem_1A_75L",
+    "id": "stem_1A_75_L",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 75,
     "side": "L",
-    "path": "Stem/A/stem_1A_75L.glb"
+    "path": "Stem/A/stem_1A_75_L.glb"
   },
   {
-    "id": "stem_1A_75R",
+    "id": "stem_1A_75_R",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 75,
     "side": "R",
-    "path": "Stem/A/stem_1A_75R.glb"
+    "path": "Stem/A/stem_1A_75_R.glb"
   },
   {
-    "id": "stem_1A_90L",
+    "id": "stem_1A_90_L",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 90,
     "side": "L",
-    "path": "Stem/A/stem_1A_90L.glb"
+    "path": "Stem/A/stem_1A_90_L.glb"
   },
   {
-    "id": "stem_1A_90R",
+    "id": "stem_1A_90_R",
     "kind": "stem",
     "group": "A",
     "len": 1,
     "angle": 90,
     "side": "R",
-    "path": "Stem/A/stem_1A_90R.glb"
+    "path": "Stem/A/stem_1A_90_R.glb"
   },
   {
     "id": "stem_3A_0",
@@ -264,112 +264,112 @@ export const CATALOG = [
     "path": "Stem/B/stem_1B_0.glb"
   },
   {
-    "id": "stem_1B_15L",
+    "id": "stem_1B_15_L",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 15,
     "side": "L",
-    "path": "Stem/B/stem_1B_15L.glb"
+    "path": "Stem/B/stem_1B_15_L.glb"
   },
   {
-    "id": "stem_1B_15R",
+    "id": "stem_1B_15_R",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 15,
     "side": "R",
-    "path": "Stem/B/stem_1B_15R.glb"
+    "path": "Stem/B/stem_1B_15_R.glb"
   },
   {
-    "id": "stem_1B_30L",
+    "id": "stem_1B_30_L",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 30,
     "side": "L",
-    "path": "Stem/B/stem_1B_30L.glb"
+    "path": "Stem/B/stem_1B_30_L.glb"
   },
   {
-    "id": "stem_1B_30R",
+    "id": "stem_1B_30_R",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 30,
     "side": "R",
-    "path": "Stem/B/stem_1B_30R.glb"
+    "path": "Stem/B/stem_1B_30_R.glb"
   },
   {
-    "id": "stem_1B_45L",
+    "id": "stem_1B_45_L",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 45,
     "side": "L",
-    "path": "Stem/B/stem_1B_45L.glb"
+    "path": "Stem/B/stem_1B_45_L.glb"
   },
   {
-    "id": "stem_1B_45R",
+    "id": "stem_1B_45_R",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 45,
     "side": "R",
-    "path": "Stem/B/stem_1B_45R.glb"
+    "path": "Stem/B/stem_1B_45_R.glb"
   },
   {
-    "id": "stem_1B_60L",
+    "id": "stem_1B_60_L",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 60,
     "side": "L",
-    "path": "Stem/B/stem_1B_60L.glb"
+    "path": "Stem/B/stem_1B_60_L.glb"
   },
   {
-    "id": "stem_1B_60R",
+    "id": "stem_1B_60_R",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 60,
     "side": "R",
-    "path": "Stem/B/stem_1B_60R.glb"
+    "path": "Stem/B/stem_1B_60_R.glb"
   },
   {
-    "id": "stem_1B_75L",
+    "id": "stem_1B_75_L",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 75,
     "side": "L",
-    "path": "Stem/B/stem_1B_75L.glb"
+    "path": "Stem/B/stem_1B_75_L.glb"
   },
   {
-    "id": "stem_1B_75R",
+    "id": "stem_1B_75_R",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 75,
     "side": "R",
-    "path": "Stem/B/stem_1B_75R.glb"
+    "path": "Stem/B/stem_1B_75_R.glb"
   },
   {
-    "id": "stem_1B_90L",
+    "id": "stem_1B_90_L",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 90,
     "side": "L",
-    "path": "Stem/B/stem_1B_90L.glb"
+    "path": "Stem/B/stem_1B_90_L.glb"
   },
   {
-    "id": "stem_1B_90R",
+    "id": "stem_1B_90_R",
     "kind": "stem",
     "group": "B",
     "len": 1,
     "angle": 90,
     "side": "R",
-    "path": "Stem/B/stem_1B_90R.glb"
+    "path": "Stem/B/stem_1B_90_R.glb"
   },
   {
     "id": "stem_3B_0",
@@ -502,8 +502,8 @@ export const CATALOG = [
       "variant": "a",
       "side": "l"
     },
-    "path": "Connector/c_mum_leaf_a_l.glb",
-    "display": "菊花葉 A 左"
+    "path": "Leaf/Connector/c_mum_leaf_a_l.glb",
+    "display": "Mum Leaf A Left"
   },
   {
     "id": "c_mum_leaf_a_r",
@@ -513,8 +513,8 @@ export const CATALOG = [
       "variant": "a",
       "side": "r"
     },
-    "path": "Connector/c_mum_leaf_a_r.glb",
-    "display": "菊花葉 A 右"
+    "path": "Leaf/Connector/c_mum_leaf_a_r.glb",
+    "display": "Mum Leaf A Right"
   },
   {
     "id": "c_mum_leaf_b_l",
@@ -524,8 +524,8 @@ export const CATALOG = [
       "variant": "b",
       "side": "l"
     },
-    "path": "Connector/c_mum_leaf_b_l.glb",
-    "display": "菊花葉 B 左"
+    "path": "Leaf/Connector/c_mum_leaf_b_l.glb",
+    "display": "Mum Leaf B Left"
   },
   {
     "id": "c_mum_leaf_b_r",
@@ -535,8 +535,8 @@ export const CATALOG = [
       "variant": "b",
       "side": "r"
     },
-    "path": "Connector/c_mum_leaf_b_r.glb",
-    "display": "菊花葉 B 右"
+    "path": "Leaf/Connector/c_mum_leaf_b_r.glb",
+    "display": "Mum Leaf B Right"
   },
   {
     "id": "c_rose_leaf_a_l",
@@ -546,8 +546,8 @@ export const CATALOG = [
       "variant": "a",
       "side": "l"
     },
-    "path": "Connector/c_rose_leaf_a_l.glb",
-    "display": "玫瑰葉 A 左"
+    "path": "Leaf/Connector/c_rose_leaf_a_l.glb",
+    "display": "Rose Leaf A Left"
   },
   {
     "id": "c_rose_leaf_a_r",
@@ -557,8 +557,8 @@ export const CATALOG = [
       "variant": "a",
       "side": "r"
     },
-    "path": "Connector/c_rose_leaf_a_r.glb",
-    "display": "玫瑰葉 A 右"
+    "path": "Leaf/Connector/c_rose_leaf_a_r.glb",
+    "display": "Rose Leaf A Right"
   },
   {
     "id": "c_rose_leaf_b_l",
@@ -568,8 +568,8 @@ export const CATALOG = [
       "variant": "b",
       "side": "l"
     },
-    "path": "Connector/c_rose_leaf_b_l.glb",
-    "display": "玫瑰葉 B 左"
+    "path": "Leaf/Connector/c_rose_leaf_b_l.glb",
+    "display": "Rose Leaf B Left"
   },
   {
     "id": "c_rose_leaf_b_r",
@@ -579,8 +579,8 @@ export const CATALOG = [
       "variant": "b",
       "side": "r"
     },
-    "path": "Connector/c_rose_leaf_b_r.glb",
-    "display": "玫瑰葉 B 右"
+    "path": "Leaf/Connector/c_rose_leaf_b_r.glb",
+    "display": "Rose Leaf B Right"
   },
   {
     "id": "c_tulip_leaf_a_l",
@@ -590,8 +590,8 @@ export const CATALOG = [
       "variant": "a",
       "side": "l"
     },
-    "path": "Connector/c_tulip_leaf_a_l.glb",
-    "display": "鬱金香葉 A 左"
+    "path": "Leaf/Connector/c_tulip_leaf_a_l.glb",
+    "display": "Tulip Leaf A Left"
   },
   {
     "id": "c_tulip_leaf_a_r",
@@ -601,8 +601,8 @@ export const CATALOG = [
       "variant": "a",
       "side": "r"
     },
-    "path": "Connector/c_tulip_leaf_a_r.glb",
-    "display": "鬱金香葉 A 右"
+    "path": "Leaf/Connector/c_tulip_leaf_a_r.glb",
+    "display": "Tulip Leaf A Right"
   },
   {
     "id": "c_tulip_leaf_b_l",
@@ -612,8 +612,8 @@ export const CATALOG = [
       "variant": "b",
       "side": "l"
     },
-    "path": "Connector/c_tulip_leaf_b_l.glb",
-    "display": "鬱金香葉 B 左"
+    "path": "Leaf/Connector/c_tulip_leaf_b_l.glb",
+    "display": "Tulip Leaf B Left"
   },
   {
     "id": "c_tulip_leaf_b_r",
@@ -623,56 +623,56 @@ export const CATALOG = [
       "variant": "b",
       "side": "r"
     },
-    "path": "Connector/c_tulip_leaf_b_r.glb",
-    "display": "鬱金香葉 B 右"
+    "path": "Leaf/Connector/c_tulip_leaf_b_r.glb",
+    "display": "Tulip Leaf B Right"
   },
   {
     "id": "e_lotus_anime",
     "kind": "end",
     "type": "flower",
     "flower": "lotus",
-    "path": "End object/e_lotus_anime.glb",
-    "display": "蓮花"
-  },
-  {
-    "id": "e_lotus_leaf_a",
-    "kind": "end",
-    "type": "lotus-leaf",
-    "leafVariant": "a",
-    "path": "End object/e_lotus_leaf_a.glb",
-    "display": "蓮葉 A"
-  },
-  {
-    "id": "e_lotus_leaf_b",
-    "kind": "end",
-    "type": "lotus-leaf",
-    "leafVariant": "b",
-    "path": "End object/e_lotus_leaf_b.glb",
-    "display": "蓮葉 B"
+    "path": "Flower/e_lotus_anime.glb",
+    "display": "Lotus"
   },
   {
     "id": "e_mum_anime",
     "kind": "end",
     "type": "flower",
     "flower": "mum",
-    "path": "End object/e_mum_anime.glb",
-    "display": "菊花"
+    "path": "Flower/e_mum_anime.glb",
+    "display": "Mum"
   },
   {
     "id": "e_rose_anime",
     "kind": "end",
     "type": "flower",
     "flower": "rose",
-    "path": "End object/e_rose_anime.glb",
-    "display": "玫瑰"
+    "path": "Flower/e_rose_anime.glb",
+    "display": "Rose"
   },
   {
     "id": "e_tulip_a_anime",
     "kind": "end",
     "type": "flower",
     "flower": "tulip",
-    "path": "End object/e_tulip_a_anime.glb",
-    "display": "鬱金香"
+    "path": "Flower/e_tulip_a_anime.glb",
+    "display": "Tulip"
+  },
+  {
+    "id": "e_lotus_leaf_a",
+    "kind": "end",
+    "type": "lotus-leaf",
+    "leafVariant": "a",
+    "path": "Leaf/End/e_lotus_leaf_a.glb",
+    "display": "Lotus Leaf A"
+  },
+  {
+    "id": "e_lotus_leaf_b",
+    "kind": "end",
+    "type": "lotus-leaf",
+    "leafVariant": "b",
+    "path": "Leaf/End/e_lotus_leaf_b.glb",
+    "display": "Lotus Leaf B"
   }
 ];
 export const byId = Object.fromEntries(CATALOG.map(p => [p.id, p]));

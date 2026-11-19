@@ -31162,6 +31162,13 @@ void main() {
       }
     });
     a.slots.sort((x, y) => x.index - y.index);
+    if (id.startsWith("stem_") && !a.head) {
+      gltfScene.updateMatrixWorld(true);
+      const bbox = new Box3().setFromObject(gltfScene);
+      const c = bbox.getCenter(new Vector3());
+      a.head = new Matrix4().setPosition(c.x, bbox.max.y, c.z);
+      console.warn("parseMarkers: stem missing head marker, synthesized at bbox top:", id);
+    }
   }
   var MODEL_BASE = "./models/";
   var httpModelMode = false;
@@ -31186,6 +31193,7 @@ void main() {
   async function loadAll(onProgress) {
     const ids = Object.keys(byId);
     let done = 0;
+    const failed = [];
     const queue = [...ids];
     const workers = Array.from({ length: 10 }, async () => {
       while (queue.length) {
@@ -31193,16 +31201,19 @@ void main() {
         const def = byId[id];
         let gltf = null;
         if (httpModelMode) {
-          try {
-            gltf = await gltfLoader.loadAsync(MODEL_BASE + def.path);
-          } catch (e) {
-            console.warn("models/ fetch failed, falling back to embedded data:", def.path);
+          for (let attempt = 0; attempt < 3 && !gltf; attempt++) {
+            try {
+              gltf = await gltfLoader.loadAsync(MODEL_BASE + def.path);
+            } catch {
+              console.warn("models/ fetch failed (attempt", attempt + 1, "):", def.path);
+              if (attempt < 2) await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
+            }
           }
         }
         if (!gltf) {
           const b64 = window.__MODEL_DATA?.[id];
           if (!b64) {
-            console.warn("Missing model data:", id);
+            failed.push(id);
             done++;
             continue;
           }
@@ -31230,6 +31241,11 @@ void main() {
       }
     });
     await Promise.all(workers);
+    if (failed.length) {
+      console.error("Models failed to load after retries:", failed);
+      toast(`${failed.length} model(s) failed to load — some pieces may be missing; please refresh.`);
+      onProgress && onProgress(ids.length, ids.length, "");
+    }
   }
   var piecePreviews = {};
   function makePiecePreviews() {
@@ -31247,7 +31263,8 @@ void main() {
     s2.add(d2);
     const cam = new PerspectiveCamera(33, 1, 0.01, 10);
     for (const p of CATALOG.filter((x) => x.kind === "pot" || x.kind === "end" || x.kind === "conn" || x.kind === "stem")) {
-      const obj = assets[p.id].template;
+      const obj = assets[p.id]?.template;
+      if (!obj) continue;
       s2.add(obj);
       obj.updateMatrixWorld(true);
       const box = new Box3().setFromObject(obj);
@@ -31354,6 +31371,7 @@ void main() {
     }
   }
   var QY = (deg) => new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), MathUtils.degToRad(deg));
+  var missingAssetWarned = /* @__PURE__ */ new Set();
   function placeChain(rootFrame, steps, slotIdx) {
     const placed = [];
     let frame = rootFrame;
@@ -31361,7 +31379,13 @@ void main() {
     for (let i = 0; i < steps.length; i++) {
       const st = steps[i];
       const a = assets[st?.v];
-      if (!a) continue;
+      if (!a) {
+        if (st?.v && !missingAssetWarned.has(st.v)) {
+          missingAssetWarned.add(st.v);
+          console.warn("placeChain: asset missing (load failure?), piece skipped:", st.v);
+        }
+        continue;
+      }
       if (!a) continue;
       const obj = a.template.clone(true);
       cloneMaterials(obj);
@@ -31435,6 +31459,7 @@ void main() {
   scene.add(slotMarkers, slotPicks);
   var pickables = [];
   function potSlotFrames(potId) {
+    if (!assets[potId]) return [];
     const potObj = assets[potId].template;
     potObj.updateMatrixWorld(true);
     return assets[potId].slots.map((s) => decompose(potObj.matrixWorld.clone().multiply(s.matrix)));
@@ -31582,7 +31607,28 @@ void main() {
     }
     collisions = next;
   }
-  window.__dbg = { collisions: () => collisions, obbs: () => lastObbs, sat: obbsCollide, bvh: () => bvhReady, exact: exactMeshPair, pot: () => lastPot, target: () => controls.target, camera: () => camera.position };
+  window.__dbg = {
+    collisions: () => collisions,
+    obbs: () => lastObbs,
+    sat: obbsCollide,
+    bvh: () => bvhReady,
+    exact: exactMeshPair,
+    pot: () => lastPot,
+    target: () => controls.target,
+    camera: () => camera.position,
+    mixers: () => flowerMixers,
+    attached: () => assembly.children.find((o) => o.userData.pieceId),
+    kids: () => assembly.children.map((o) => ({ pieceId: o.userData.pieceId ?? null, i: o.userData.stepIndex ?? null, meshes: o.children?.length ?? o.isMesh })),
+    assets: () => Object.keys(assets).length,
+    probe: (id) => {
+      const a = assets[id];
+      let skinned = 0;
+      a?.template?.traverse((o) => {
+        if (o.isSkinnedMesh) skinned++;
+      });
+      return { exists: !!a, clip: !!a?.clip, skinned, dur: a?.clip?.duration?.toFixed?.(3), head: !!a?.head, headKind: a?.headKind ?? null, out: !!a?.out, slots: a?.slots?.length };
+    }
+  };
   function rebuild() {
     assembly.traverse((o) => {
       if (o.isMesh) o.material?.dispose?.();
@@ -31603,6 +31649,10 @@ void main() {
     flowerMixers = [];
     bloomRowRefs.clear();
     if (!state.pot) return;
+    if (!assets[state.pot]) {
+      toast("Pot model failed to load — please refresh the page.");
+      return;
+    }
     const potObj = assets[state.pot].template.clone(true);
     potObj.traverse((o) => {
       if (o.isMesh) {

@@ -1,0 +1,16 @@
+# 網站執行只需要:index.html、app.bundle.js、styles.css、gif.worker.js、fonts/、models/
+
+# 建置環境
+node_modules/
+package.json
+package-lock.json
+build.mjs
+
+# 原始碼與產生器(本機保留,不入庫)
+main.js
+catalog.js
+catalog-gen.mjs
+
+# 其他
+README.md
+.playwright-mcp/

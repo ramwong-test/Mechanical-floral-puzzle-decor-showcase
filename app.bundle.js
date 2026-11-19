@@ -31167,6 +31167,7 @@ void main() {
       const bbox = new Box3().setFromObject(gltfScene);
       const c = bbox.getCenter(new Vector3());
       a.head = new Matrix4().setPosition(c.x, bbox.max.y, c.z);
+      a.headSynthesized = true;
       console.warn("parseMarkers: stem missing head marker, synthesized at bbox top:", id);
     }
   }
@@ -31248,6 +31249,23 @@ void main() {
     }
   }
   var piecePreviews = {};
+  function repairMissingMarkers() {
+    for (const [id, a] of Object.entries(assets)) {
+      if (!id.startsWith("stem_")) continue;
+      if (a.head && !a.headSynthesized) continue;
+      const p = byId[id];
+      if (!p || !p.side) continue;
+      const sibId = `stem_${p.len}${p.group}_${p.angle}_${p.side === "L" ? "R" : "L"}`;
+      const sib = assets[sibId];
+      if (!sib?.head || sib.headSynthesized) continue;
+      const t = new Vector3(), q = new Quaternion(), s = new Vector3();
+      sib.head.decompose(t, q, s);
+      const mirroredQuat = new Quaternion(q.x, -q.y, -q.z, q.w);
+      a.head = new Matrix4().compose(new Vector3(-t.x, t.y, t.z), mirroredQuat, s);
+      a.headSynthesized = false;
+      console.warn("repairMissingMarkers: repaired stem head from mirrored sibling:", id, "←", sibId);
+    }
+  }
   function makePiecePreviews() {
     const r2 = new WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     r2.setSize(160, 160);
@@ -31620,6 +31638,13 @@ void main() {
     attached: () => assembly.children.find((o) => o.userData.pieceId),
     kids: () => assembly.children.map((o) => ({ pieceId: o.userData.pieceId ?? null, i: o.userData.stepIndex ?? null, meshes: o.children?.length ?? o.isMesh })),
     assets: () => Object.keys(assets).length,
+    headOf: (id) => {
+      const h = assets[id]?.head;
+      if (!h) return null;
+      const t = new Vector3(), q = new Quaternion(), v = new Vector3();
+      h.decompose(t, q, v);
+      return { pos: t.toArray().map((n) => +n.toFixed(4)), quat: [+q.x.toFixed(3), +q.y.toFixed(3), +q.z.toFixed(3), +q.w.toFixed(3)] };
+    },
     probe: (id) => {
       const a = assets[id];
       let skinned = 0;
@@ -32618,6 +32643,7 @@ void main() {
       fill.style.width = `${done / total * 100}%`;
       msg.textContent = `Loading parts ${done}/${total} — ${id}`;
     });
+    repairMissingMarkers();
     makePiecePreviews();
     await initBVH();
     loadState();

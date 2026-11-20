@@ -31120,6 +31120,7 @@ void main() {
   keyLight.shadow.bias = -4e-4;
   keyLight.shadow.radius = 6;
   scene.add(keyLight);
+  scene.add(keyLight.target);
   var fillLight = new DirectionalLight(13621480, 0.5);
   fillLight.position.set(-0.7, 0.4, -0.5);
   scene.add(fillLight);
@@ -31701,6 +31702,7 @@ void main() {
     pickables.push(...collectPickAndMarkers());
     computeCollisions();
     updateCollideStatus();
+    refreshShadowFrustum();
   }
   function rebuildFull() {
     rebuild();
@@ -31738,6 +31740,12 @@ void main() {
     }
     computeCollisions();
     updateCollideStatus();
+    refreshChainCollideMarks();
+  }
+  function refreshChainCollideMarks() {
+    document.querySelectorAll("#chainTree .chain-step").forEach((row, idx) => {
+      row.classList.toggle("collide", collisions.byStep.has(`${selectedSlot}:${idx}`));
+    });
   }
   function buildSlotMarkers() {
     slotFrames.forEach((f, i) => {
@@ -31779,6 +31787,33 @@ void main() {
     return out;
   }
   var camGoal = { target: new Vector3(-0.05, 0.11, 0), dist: 0.75, frames: 0 };
+  function refreshShadowFrustum() {
+    const box = new Box3().setFromObject(assembly);
+    if (box.isEmpty()) return;
+    const c = box.getCenter(new Vector3());
+    const s = box.getSize(new Vector3());
+    const half = Math.max(s.x, s.y, s.z) * 0.8;
+    const lightDir = new Vector3(0.5, 0.95, 0.45).normalize();
+    const lightDist = half * 4 + 1;
+    keyLight.position.copy(c).addScaledVector(lightDir, lightDist);
+    keyLight.target.position.set(c.x, c.y, c.z);
+    const cam = keyLight.shadow.camera;
+    cam.left = -half;
+    cam.right = half;
+    cam.top = half;
+    cam.bottom = -half;
+    cam.near = 0.1;
+    cam.far = lightDist + half * 2;
+    cam.updateProjectionMatrix();
+    const mapRes = half > 1.2 ? 4096 : 2048;
+    if (keyLight.shadow.mapSize.x !== mapRes) {
+      keyLight.shadow.mapSize.set(mapRes, mapRes);
+      if (keyLight.shadow.map) {
+        keyLight.shadow.map.dispose();
+        keyLight.shadow.map = null;
+      }
+    }
+  }
   function frameAssembly() {
     if (assembly.children.length === 0) return;
     const box = new Box3().setFromObject(assembly);
@@ -31820,7 +31855,17 @@ void main() {
     downPos = null;
     if (moved > 5) return;
     const hit = pickAt(ev);
-    if (hit) selectSlot(hit.slot);
+    if (hit) {
+      if (hit.stepIndex !== void 0) {
+        activeChainStep = hit.stepIndex;
+        selectSlot(hit.slot);
+        const el = document.querySelector("#chainTree .chain-step.active");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        activeChainStep = -1;
+        selectSlot(hit.slot);
+      }
+    }
   });
   function setPieceTint(root, on) {
     root.traverse((o) => {
@@ -31886,6 +31931,7 @@ void main() {
     return p.display || p.id;
   }
   var selectedSlot = -1;
+  var activeChainStep = -1;
   var potLabel = (p) => `Pot ${p.id.slice(4)}`;
   var potSlotCount = (p) => assets[p.id]?.slots.length ?? "?";
   function renderPotSelect() {
@@ -31948,10 +31994,10 @@ void main() {
   var closePotMenu = () => updatePotMenu(false);
   $("#potBtn").onclick = () => updatePotMenu($("#potMenu").hidden);
   document.addEventListener("pointerdown", (ev) => {
-    if ($("#potMenu").hidden) return;
-    if (!ev.target.closest("#potMenu") && !ev.target.closest("#potBtn")) closePotMenu();
+    if (!$("#potMenu").hidden && !ev.target.closest("#potMenu") && !ev.target.closest("#potBtn")) closePotMenu();
+    if (!pieceMenu.hidden && pieceMenuAnchor && !ev.target.closest("#pieceMenu") && !ev.target.closest("[data-menu-anchor]")) closePieceMenu();
   });
-  $("#panel").addEventListener("scroll", () => {
+  $("#panelScroll").addEventListener("scroll", () => {
     if (!$("#potMenu").hidden) closePotMenu();
   }, { passive: true });
   function positionPanelToggle() {
@@ -32021,7 +32067,10 @@ void main() {
       else if (st === "done") b.classList.add("filled");
       b.setAttribute("aria-pressed", String(selectedSlot === i));
       b.style.gridColumn = String(i % cols + 1);
-      b.onclick = () => selectSlot(i);
+      b.onclick = () => {
+        activeChainStep = -1;
+        selectSlot(i);
+      };
       map.appendChild(b);
     }
   }
@@ -32090,13 +32139,38 @@ void main() {
     return { row, input, out };
   }
   var sideFmtLR = (val) => val ? "R" : "L";
+  function leafConnPiece(flower, variant, side) {
+    return CATALOG.find((x) => x.kind === "conn" && x.leaf && x.leaf.flower === flower && x.leaf.variant === variant && x.leaf.side === side);
+  }
+  function connSwapOptions() {
+    const list = [];
+    const plain = byId["c_connector"];
+    if (plain) list.push({ ...plain, menuLabel: "Plain connector" });
+    [["mum", "Mum leaf"], ["rose", "Rose leaf"], ["tulip", "Tulip leaf"]].forEach(([f, label]) => {
+      const p = leafConnPiece(f, "a", "l");
+      if (p) list.push({ ...p, menuLabel: label });
+    });
+    const lotus = CATALOG.find((x) => x.kind === "end" && x.type === "lotus-leaf");
+    if (lotus) list.push({ ...lotus, menuLabel: "Lotus leaf" });
+    return list;
+  }
   function leafOptions() {
-    return CATALOG.filter((x) => x.kind === "conn" && x.leaf || x.kind === "end" && x.type === "lotus-leaf");
+    return connSwapOptions().filter((x) => x.id !== "c_connector");
   }
   var flowerOptions = () => CATALOG.filter((x) => x.kind === "end" && x.type === "flower");
   var pieceMenu = $("#pieceMenu");
+  var pieceMenuAnchor = null;
   function closePieceMenu() {
     pieceMenu.hidden = true;
+    pieceMenuAnchor = null;
+  }
+  function togglePieceMenu(anchor) {
+    if (!pieceMenu.hidden && pieceMenuAnchor === anchor) {
+      closePieceMenu();
+      return false;
+    }
+    pieceMenuAnchor = anchor;
+    return true;
   }
   function openPieceMenu(anchor, options, metaFor, onPick) {
     pieceMenu.innerHTML = "";
@@ -32107,10 +32181,10 @@ void main() {
       const img = document.createElement("img");
       img.className = "pot-item-thumb";
       img.src = piecePreviews[p.id] || "";
-      img.alt = pieceDisplayName(p);
+      img.alt = p.menuLabel || pieceDisplayName(p);
       const name = document.createElement("span");
       name.className = "name";
-      name.textContent = pieceDisplayName(p);
+      name.textContent = p.menuLabel || pieceDisplayName(p);
       const meta = document.createElement("span");
       meta.className = "meta";
       meta.textContent = metaFor(p);
@@ -32177,15 +32251,21 @@ void main() {
       btns.appendChild(b);
       return b;
     };
-    make("Leaf", () => {
-      setStemGroup(last, "A");
+    make("Leaf", function(ev) {
+      if (!togglePieceMenu(ev.currentTarget)) return;
+      setStemGroup(last, "B");
       openPieceMenu(
-        btns.querySelector(".choice"),
+        ev.currentTarget,
         leafOptions(),
         (p2) => p2.kind === "conn" ? "Chain continues" : "Chain ends here",
         (p2) => {
-          if (p2.kind === "conn") addStep(steps.length, { k: "conn", v: p2.id, s: 0 });
-          else addStep(steps.length, { k: "end", v: p2.id, s: 0, b: 1 });
+          if (p2.kind === "conn") {
+            setStemGroup(last, "B");
+            addStep(steps.length, { k: "conn", v: p2.id, s: 0 });
+          } else {
+            setStemGroup(last, "A");
+            addStep(steps.length, { k: "end", v: p2.id, s: 0, b: 1 });
+          }
           renderBuilder();
         }
       );
@@ -32196,10 +32276,11 @@ void main() {
       addStep(steps.length, newStem("A", 1, 0, null));
       renderBuilder();
     });
-    make("Flower", () => {
+    make("Flower", function(ev) {
+      if (!togglePieceMenu(ev.currentTarget)) return;
       setStemGroup(last, "A");
       openPieceMenu(
-        btns.querySelectorAll(".choice")[2],
+        ev.currentTarget,
         flowerOptions(),
         () => "Blooms",
         (p2) => {
@@ -32220,6 +32301,7 @@ void main() {
       const row = document.createElement("div");
       row.className = "chain-step";
       row.dataset.kind = st.k;
+      if (i === activeChainStep) row.classList.add("active");
       if (collisions.byStep.has(`${selectedSlot}:${i}`)) row.classList.add("collide");
       const head = document.createElement("div");
       head.className = "head-row";
@@ -32229,7 +32311,7 @@ void main() {
       x.title = "Remove from this step onward";
       x.onclick = () => removeStepFrom(i);
       head.appendChild(x);
-      const kindEN = st.k === "stem" ? "Stem" : st.k === "conn" ? byId[st.v]?.leaf ? pieceDisplayName(byId[st.v]) : "Connector" : pieceDisplayName(byId[st.v]);
+      const kindEN = pieceDisplayName(byId[st.v]);
       const label = document.createElement("span");
       label.className = "v";
       label.textContent = kindEN;
@@ -32249,24 +32331,87 @@ void main() {
         const swap = document.createElement("button");
         swap.className = "mini-play";
         swap.textContent = "⇄";
-        swap.title = isFlower ? "Change flower" : "Change lotus leaf";
-        const opts = isFlower ? flowerOptions() : CATALOG.filter((q) => q.kind === "end" && q.type === "lotus-leaf");
+        swap.title = isFlower ? "Change flower" : "Change leaf / connector (converts the chain to continue)";
+        const opts = isFlower ? flowerOptions() : connSwapOptions();
         swap.setAttribute("data-menu-anchor", "yes");
-        swap.onclick = () => openPieceMenu(
-          swap,
-          opts,
-          () => isFlower ? "Blooms" : "Chain ends here",
-          (p2) => {
-            if (p2.id === st.v) {
-              closePieceMenu();
-              return;
+        swap.onclick = function(ev) {
+          if (!togglePieceMenu(ev.currentTarget)) return;
+          openPieceMenu(
+            ev.currentTarget,
+            opts,
+            (p2) => p2.kind === "conn" ? p2.leaf ? "Chain continues" : "Chain continues (plain)" : isFlower ? "Blooms" : "Chain ends here",
+            (p2) => {
+              if (p2.kind === "conn") {
+                const np = p2.leaf ? leafConnPiece(p2.leaf.flower, "a", "l") : p2;
+                st.k = "conn";
+                st.v = np.id;
+                delete st.b;
+                setStemGroup((state.slots[selectedSlot] || [])[i - 1], "B");
+                replaceChain(selectedSlot);
+                saveState();
+                renderBuilder();
+              } else if (p2.kind === "end" && !isFlower) {
+                if (p2.id !== st.v) {
+                  st.v = CATALOG.find((x2) => x2.kind === "end" && x2.type === "lotus-leaf" && x2.leafVariant === (byId[st.v].leafVariant || "a")).id;
+                  replaceChain(selectedSlot);
+                  saveState();
+                  renderBuilder();
+                } else closePieceMenu();
+              } else if (p2.id !== st.v) {
+                st.v = p2.id;
+                replaceChain(selectedSlot);
+                saveState();
+                renderBuilder();
+              } else {
+                closePieceMenu();
+              }
             }
-            st.v = p2.id;
-            replaceChain(selectedSlot);
-            saveState();
-            renderBuilder();
-          }
-        );
+          );
+        };
+        head.appendChild(swap);
+      }
+      if (st.k === "conn") {
+        const swap = document.createElement("button");
+        swap.className = "mini-play";
+        swap.textContent = "⇄";
+        swap.title = "Change connector / leaf";
+        swap.setAttribute("data-menu-anchor", "yes");
+        swap.onclick = function(ev) {
+          if (!togglePieceMenu(ev.currentTarget)) return;
+          openPieceMenu(
+            ev.currentTarget,
+            connSwapOptions(),
+            (p2) => p2.kind === "end" ? "Chain ends here" : p2.leaf ? "Chain continues" : "Chain continues (plain)",
+            (p2) => {
+              if (p2.id === st.v) {
+                closePieceMenu();
+                return;
+              }
+              if (p2.kind === "conn") {
+                const cur = byId[st.v];
+                const variant = cur?.leaf ? cur.leaf.variant : "a";
+                const side = cur?.leaf ? cur.leaf.side : "l";
+                const np = p2.leaf ? leafConnPiece(p2.leaf.flower, variant, side) || p2 : p2;
+                st.v = np.id;
+                const prev = (state.slots[selectedSlot] || [])[i - 1];
+                if (prev && prev.k === "stem") setStemGroup(prev, "B");
+                replaceChain(selectedSlot);
+                saveState();
+                renderBuilder();
+              } else {
+                const prev = (state.slots[selectedSlot] || [])[i - 1];
+                if (prev && prev.k === "stem") setStemGroup(prev, "A");
+                state.slots[selectedSlot].length = i + 1;
+                state.slots[selectedSlot][i] = { k: "end", v: p2.id, s: 0, b: 1 };
+                state.slots[selectedSlot].length = i + 1;
+                state.slots[selectedSlot][i] = { k: "end", v: p2.id, s: 0, b: 1 };
+                saveState();
+                rebuildFull();
+                renderBuilder();
+              }
+            }
+          );
+        };
         head.appendChild(swap);
       }
       const fold = document.createElement("button");
@@ -32284,6 +32429,10 @@ void main() {
       };
       row.appendChild(body);
       if (st.k === "stem") {
+        const updateStemLabel = () => {
+          const v = row.querySelector(".v");
+          if (v) v.textContent = pieceDisplayName(byId[st.v]);
+        };
         body.appendChild(ctlRow(
           "Height",
           0,
@@ -32294,6 +32443,7 @@ void main() {
           (val) => {
             st.len = val ? 3 : 1;
             resolveStem(st);
+            updateStemLabel();
             replaceChain(selectedSlot);
             saveState();
             renderSlotRow();
@@ -32310,6 +32460,7 @@ void main() {
             st.angle = ang;
             if (ang > 0 && !st.side) st.side = "L";
             resolveStem(st);
+            updateStemLabel();
             replaceChain(selectedSlot);
             saveState();
             renderSlotRow();
@@ -32326,6 +32477,7 @@ void main() {
             st.side = val ? "R" : "L";
             if (st.angle > 0) {
               resolveStem(st);
+              updateStemLabel();
               replaceChain(selectedSlot);
             }
             saveState();
@@ -32347,6 +32499,23 @@ void main() {
       } else if (st.k === "conn" && byId[st.v]?.leaf) {
         const p = byId[st.v];
         body.appendChild(ctlRow(
+          "A / B",
+          0,
+          1,
+          1,
+          p.leaf.variant === "b" ? 1 : 0,
+          (val) => val ? "B" : "A",
+          (val) => {
+            const np = leafConnPiece(p.leaf.flower, val ? "b" : "a", p.leaf.side);
+            if (np) {
+              st.v = np.id;
+              replaceChain(selectedSlot);
+              saveState();
+              renderChainTree();
+            }
+          }
+        ).row);
+        body.appendChild(ctlRow(
           "L / R",
           0,
           1,
@@ -32355,11 +32524,12 @@ void main() {
           sideFmtLR,
           (val) => {
             const side = val ? "R" : "L";
-            const np = CATALOG.find((q) => q.kind === "conn" && q.leaf && q.leaf.flower === p.leaf.flower && q.leaf.variant === p.leaf.variant && q.leaf.side.toUpperCase() === side);
+            const np = leafConnPiece(p.leaf.flower, p.leaf.variant, side.toLowerCase());
             if (np) {
               st.v = np.id;
               replaceChain(selectedSlot);
               saveState();
+              renderChainTree();
             }
           }
         ).row);
@@ -32377,6 +32547,24 @@ void main() {
           }
         ).row);
       } else if (st.k === "end") {
+        if (byId[st.v]?.type === "lotus-leaf") {
+          body.appendChild(ctlRow(
+            "A / B",
+            0,
+            1,
+            1,
+            byId[st.v].leafVariant === "b" ? 1 : 0,
+            (val) => val ? "B" : "A",
+            (val) => {
+              const np = CATALOG.find((x2) => x2.kind === "end" && x2.type === "lotus-leaf" && x2.leafVariant === (val ? "b" : "a"));
+              if (np) {
+                st.v = np.id;
+                replaceChain(selectedSlot);
+                saveState();
+              }
+            }
+          ).row);
+        }
         if (byId[st.v]?.anime) {
           const bloomRow = document.createElement("div");
           bloomRow.className = "spin-row";
@@ -32495,6 +32683,8 @@ void main() {
     withExportResolution(() => {
       const plinth2 = scene.children.find((o) => o.userData.isPlinth);
       if (plinth2) plinth2.visible = false;
+      const markersWereVisible = slotMarkers.visible;
+      slotMarkers.visible = false;
       const camSaved = camera.position.clone();
       const tgtSaved = controls.target.clone();
       const dir = camera.position.clone().sub(controls.target).normalize();
@@ -32505,14 +32695,19 @@ void main() {
       camera.lookAt(box.getCenter(new Vector3()));
       renderer.render(scene, camera);
       const { sx, sy, cw, ch } = computeCrop();
+      const side = Math.min(Math.max(cw, ch), Math.min(canvas.width, canvas.height));
+      const cx = sx + cw / 2, cy = sy + ch / 2;
+      const x0 = Math.max(0, Math.min(Math.round(cx - side / 2), canvas.width - side));
+      const y0 = Math.max(0, Math.min(Math.round(cy - side / 2), canvas.height - side));
       const c2 = document.createElement("canvas");
-      c2.width = cw;
-      c2.height = ch;
-      c2.getContext("2d").drawImage(canvas, sx, sy, cw, ch, 0, 0, cw, ch);
+      c2.width = side;
+      c2.height = side;
+      c2.getContext("2d").drawImage(canvas, x0, y0, side, side, 0, 0, side, side);
       camera.position.copy(camSaved);
       controls.target.copy(tgtSaved);
       controls.update();
       if (plinth2) plinth2.visible = true;
+      slotMarkers.visible = markersWereVisible && ringsVisible;
       c2.toBlob((blob) => {
         downloadBlob(blob, "mechanical-floral.png");
         toast(`PNG downloaded (${cw}×${ch}).`);

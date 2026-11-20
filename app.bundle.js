@@ -32449,40 +32449,21 @@ void main() {
             renderSlotRow();
           }
         ).row);
-        body.appendChild(ctlRow(
-          "Curvature",
-          0,
-          90,
-          15,
-          st.angle,
-          (ang) => ang === 0 ? "Straight" : `${ang}°`,
-          (ang) => {
-            st.angle = ang;
-            if (ang > 0 && !st.side) st.side = "L";
-            resolveStem(st);
-            updateStemLabel();
-            replaceChain(selectedSlot);
-            saveState();
-            renderSlotRow();
-          }
-        ).row);
-        body.appendChild(ctlRow(
-          "L / R",
-          0,
-          1,
-          1,
-          st.side === "R" ? 1 : 0,
-          sideFmtLR,
-          (val) => {
-            st.side = val ? "R" : "L";
-            if (st.angle > 0) {
-              resolveStem(st);
-              updateStemLabel();
-              replaceChain(selectedSlot);
-            }
-            saveState();
-          }
-        ).row);
+        const signed = (st.side === "R" ? 1 : -1) * st.angle + 90;
+        body.appendChild(ctlRow("Curvature", 0, 180, 15, signed, (v2) => {
+          const d = v2 - 90;
+          return d === 0 ? "Straight" : d < 0 ? `${-d}° L` : `${d}° R`;
+        }, (v2) => {
+          const d = v2 - 90;
+          st.angle = Math.abs(d);
+          if (d < 0) st.side = "L";
+          else if (d > 0) st.side = "R";
+          resolveStem(st);
+          updateStemLabel();
+          replaceChain(selectedSlot);
+          saveState();
+          renderSlotRow();
+        }).row);
         body.appendChild(ctlRow(
           "Rotation",
           0,
